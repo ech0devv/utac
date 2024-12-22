@@ -15,8 +15,8 @@ android {
         applicationId = "dev.ech0.torbox"
         minSdk = 29
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.0.1"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -25,7 +25,7 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("key.properties").inputStream())
         val tmdbKey = properties.getProperty("TMDB_KEY")
-        buildConfigField("String", "TMDB_KEY",tmdbKey )
+        buildConfigField("String", "TMDB_KEY", tmdbKey )
     }
 
     buildTypes {

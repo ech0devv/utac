@@ -274,7 +274,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                Icons.Outlined.Colorize,
+                Icons.Outlined.Newspaper,
                 "Disable usenet searching",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(end = 8.dp)
@@ -282,7 +282,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Column() {
                 Text("Enable usenet searching")
                 Text(
-                    "Can help fix really slow searches if turned off",
+                    "Can help fix really slow searches if turned off. Requires pro.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.width(250.dp),
