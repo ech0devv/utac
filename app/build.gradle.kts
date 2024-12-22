@@ -25,7 +25,7 @@ android {
         val properties = Properties()
         properties.load(project.rootProject.file("key.properties").inputStream())
         val tmdbKey = properties.getProperty("TMDB_KEY")
-        buildConfigField("String", "TMDB_KEY", tmdbKey )
+        buildConfigField("String", "TMDB_KEY", "\"$tmdbKey\"" )
     }
 
     buildTypes {
