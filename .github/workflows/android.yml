@@ -22,7 +22,7 @@ jobs:
     - name: create key.properties
       env: 
         TMDB_KEY: ${{ secrets.TMDB_KEY }}
-      run: echo "${TMDB_KEY}" > key.properties
+      run: echo "TMDB_KEY=${TMDB_KEY}" > key.properties
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
