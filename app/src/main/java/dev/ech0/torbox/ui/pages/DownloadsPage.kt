@@ -135,7 +135,6 @@ fun DownloadsPage() {
                     Crossfade(targetState = currentFilter == 0) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
-                            remember(downloads) {}
                             downloads = downloads.sortedBy {  it.getString("name") }
                         } else {
                             Icon(Icons.Filled.Add, "Add")
@@ -148,7 +147,6 @@ fun DownloadsPage() {
                     Crossfade(targetState = currentFilter == 1) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
-                            remember(downloads) {}
                             downloads = downloads.sortedByDescending {
                                 Instant.from(
                                     DateTimeFormatter.ISO_INSTANT.parse(it.getString("created_at"))
