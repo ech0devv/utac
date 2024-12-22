@@ -236,6 +236,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
         return json
     }
     suspend fun searchUsenet(query: String, season: Int, episode: Int): JSONObject{
+
         val response = ktor.get(base_search + "usenet/${Uri.encode(query)}?check_cache=true&check_owned=true&season=$season&episode=$episode&metadata=false"){
             headers {
                 append(HttpHeaders.Authorization, "Bearer $key")

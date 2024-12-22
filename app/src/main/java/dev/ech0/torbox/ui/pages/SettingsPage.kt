@@ -56,6 +56,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
     val context = LocalContext.current
     val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
     var amoChecked by remember { mutableStateOf(preferences.getBoolean("amoled", false)) }
+    var usenetChecked by remember { mutableStateOf(preferences.getBoolean("usenet", true)) }
     var adultChecked by remember { mutableStateOf(preferences.getBoolean("adultContent", false)) }
     var searchChecked by remember { mutableStateOf(preferences.getBoolean("searchTop", false)) }
     var openSourceDialog by remember { mutableStateOf(false) }
@@ -249,6 +250,51 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                     }
                 }, thumbContent = {
                     AnimatedContent(adultChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    }
+                }, modifier = Modifier.padding(all = 0.dp)
+            )
+        }
+        HorizontalDivider()
+        Row(
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Outlined.Colorize,
+                "Disable usenet searching",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Column() {
+                Text("Enable usenet searching")
+                Text(
+                    "Can help fix really slow searches if turned off",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.width(250.dp),
+
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = usenetChecked, onCheckedChange = {
+                    preferences.edit().putBoolean("usenet", it).apply(); usenetChecked = it;
+                }, enabled = preferences.getInt("plan", 4) == 2, thumbContent = {
+                    AnimatedContent(usenetChecked, transitionSpec = {
                         slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
                     }) { checked ->
                         if (checked) {

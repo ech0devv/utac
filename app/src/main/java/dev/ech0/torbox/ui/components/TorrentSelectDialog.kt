@@ -60,13 +60,18 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
         loadingText = "Just a sec..."
         shouldLoad = true
         joinAll(launch {
-            if (arguments.type == "tv") {
-                torrentResults = torboxAPI.searchTorrents(arguments.remoteId, arguments.season, arguments.episode)
-                    .getJSONObject("data").getJSONArray("torrents")
-            } else if (arguments.type == "movie") {
-                torrentResults =
-                    torboxAPI.searchTorrentsId(arguments.remoteId).getJSONObject("data").getJSONArray("torrents")
-            }
+           try{
+               if (arguments.type == "tv") {
+                   torrentResults = torboxAPI.searchTorrents(arguments.remoteId, arguments.season, arguments.episode)
+                       .getJSONObject("data").getJSONArray("torrents")
+               } else if (arguments.type == "movie") {
+                   torrentResults =
+                       torboxAPI.searchTorrentsId(arguments.remoteId).getJSONObject("data").getJSONArray("torrents")
+               }
+           }catch(e: Exception){
+               Toast.makeText(context, "Failed to get torrent search results.", Toast.LENGTH_LONG).show()
+               Log.d("dev.ech0.torbox",e.toString())
+           }
             for (i in 0 until torrentResults.length()) {
                 val torrent = torrentResults.getJSONObject(i)
                 val titleParsedData = torrent.getJSONObject("title_parsed_data")
@@ -77,13 +82,18 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                 results += Result(rawTitle, titleParsedData, link, false, cached, owned)
             }
         }, launch {
-            if (preferences.getInt("plan", 4) == 2) {
-                if (arguments.type == "tv") {
-                    usenetResults = torboxAPI.searchUsenet(arguments.remoteId, arguments.season, arguments.episode)
-                        .getJSONObject("data").getJSONArray("nzbs")
-                } else if (arguments.type == "movie") {
-                    usenetResults =
-                        torboxAPI.searchUsenetId(arguments.remoteId).getJSONObject("data").getJSONArray("nzbs")
+            if (preferences.getInt("plan", 4) == 2 && preferences.getBoolean("usenet", true)) {
+                try {
+                    if (arguments.type == "tv") {
+                        usenetResults = torboxAPI.searchUsenet(arguments.remoteId, arguments.season, arguments.episode)
+                            .getJSONObject("data").getJSONArray("nzbs")
+                    } else if (arguments.type == "movie") {
+                        usenetResults =
+                            torboxAPI.searchUsenetId(arguments.remoteId).getJSONObject("data").getJSONArray("nzbs")
+                    }
+                }catch (e: Exception){
+                    Toast.makeText(context, "Failed to get usenet search results.", Toast.LENGTH_LONG).show()
+                    Log.d("dev.ech0.torbox",e.toString())
                 }
                 for (i in 0 until usenetResults.length()) {
                     val usenet = usenetResults.getJSONObject(i)
