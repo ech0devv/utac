@@ -383,7 +383,8 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 Text(
                     "Select where the search bar goes on your screen.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.width(250.dp),
                 )
             }
             Spacer(Modifier.weight(1f))
