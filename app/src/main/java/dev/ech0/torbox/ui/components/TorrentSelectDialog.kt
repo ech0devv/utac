@@ -215,12 +215,6 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
 
                                                             if (arguments.type == "tv") {
                                                                 for (i in 0 until cached.length()) {
-                                                                    Log.d(
-                                                                        "dev.ech0.torbox",
-                                                                        cached
-                                                                            .getJSONObject(i)
-                                                                            .getString("name")
-                                                                    )
                                                                     if (cached
                                                                             .getJSONObject(i)
                                                                             .getString("name")
@@ -251,6 +245,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                                 }
                                                                 if (fileIds.size == 1) {
                                                                     fileId = fileIds[0]
+                                                                    Log.d("dev.ech0.torbox", fileId.toString())
                                                                 } else {
                                                                     arguments.navController.navigate(
                                                                         "Error/${
@@ -294,7 +289,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             linkJSON = torboxAPI.getTorrentLink(
                                                                 newTorrent
                                                                     .getJSONObject("data")
-                                                                    .getInt("torrent_id"), false
+                                                                    .getInt("torrent_id"), fileId, false
                                                             )
                                                         }
                                                         loadingText = "Just a sec... (4/4)"
