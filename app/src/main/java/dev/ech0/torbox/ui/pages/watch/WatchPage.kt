@@ -44,6 +44,7 @@ import org.json.JSONObject
 @Composable
 fun WatchPage(meta: JSONObject, navController: NavController) {
     var overviewDialog by remember { mutableStateOf(false) }
+    var overviewDialogContent by remember { mutableStateOf("") }
     val type = meta.getString("media_type")
     var details by remember { mutableStateOf(JSONObject()) }
     var seasons by remember { mutableStateOf(arrayOfNulls<JSONObject>(0)) }
@@ -188,7 +189,7 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier
                     .padding(vertical = 12.dp, horizontal = 24.dp)
-                    .clickable { overviewDialog = true },
+                    .clickable { overviewDialogContent = meta.getString("overview"); overviewDialog = true },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2
@@ -249,6 +250,9 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                         }, navController = navController
                                     )
                                     displayTorrentSelectDialog = true
+                                }, onLongClick = {
+                                    overviewDialogContent = episode.getString("overview") ?: ""
+                                    overviewDialog = true
                                 })
                         ) {
                             if (episode.has("still_path")) {
@@ -342,7 +346,7 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                         .clickable(interactionSource = null, indication = null) { }) {
                     SelectionContainer {
                         Text(
-                            meta.getString("overview"),
+                            overviewDialogContent,
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .fillMaxWidth()
