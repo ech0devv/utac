@@ -31,6 +31,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.preference.PreferenceManager
 import coil3.compose.AsyncImage
+import dev.ech0.torbox.BuildConfig
 import dev.ech0.torbox.LocalNavController
 import dev.ech0.torbox.R
 import dev.ech0.torbox.api.TMDBApi
@@ -533,6 +534,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 Text("Open source licenses", Modifier.padding(start = 8.dp))
             }
         }
+        Text(BuildConfig.VERSION_NAME, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
     }
     if (openSourceDialog) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
