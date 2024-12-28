@@ -62,13 +62,11 @@ class MainActivity : ComponentActivity() {
                         topBar = { TopBar(navController) },
                         modifier = Modifier.imePadding()
                     ) { paddingValues ->
-                        Crossfade(colorScheme) {
-                            tmdbApi = TMDBApi(preferences)
-                            Navigation(navController, paddingValues, setColorScheme = { colorScheme = it })
-                            torboxAPI =
-                                preferences.getString("apiKey", "__")
-                                    ?.let { it1 -> TorboxAPI(it1, navController) }!!
-                        }
+                        tmdbApi = TMDBApi(preferences)
+                        Navigation(navController, paddingValues, setColorScheme = { colorScheme = it })
+                        torboxAPI =
+                            preferences.getString("apiKey", "__")
+                                ?.let { it1 -> TorboxAPI(it1, navController) }!!
                     }
                 }
 
