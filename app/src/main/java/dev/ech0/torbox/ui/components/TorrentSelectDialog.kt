@@ -3,6 +3,7 @@ package dev.ech0.torbox.ui.components
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.text.format.Formatter
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
@@ -33,7 +34,8 @@ class Result(
     var link: String,
     var usenet: Boolean,
     var cached: Boolean,
-    var owned: Boolean
+    var owned: Boolean,
+    var size: Long = 0,
 ) {}
 
 class TorrentSelectDialogArguments(
@@ -79,7 +81,8 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                 val link = torrent.getString("magnet")
                 val cached = torrent.getBoolean("cached")
                 val owned = torrent.getBoolean("owned")
-                results += Result(rawTitle, titleParsedData, link, false, cached, owned)
+                val size = torrent.getLong("size")
+                results += Result(rawTitle, titleParsedData, link, false, cached, owned, size)
             }
         }, launch {
             if (preferences.getInt("plan", 4) == 2 && preferences.getBoolean("usenet", true)) {
@@ -102,7 +105,8 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                     val link = usenet.getString("nzb")
                     val cached = usenet.getBoolean("cached")
                     val owned = usenet.getBoolean("owned")
-                    results += Result(rawTitle, titleParsedData, link, true, cached, owned)
+                    val size = usenet.getLong("size")
+                    results += Result(rawTitle, titleParsedData, link, true, cached, owned, size)
                 }
             }
         })
@@ -298,6 +302,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                             }) {
                                         Column {
                                             Text(torrent.raw_title)
+
                                             FlowRow() {
                                                 for (key in torrent.title_parsed_data.keys()) {
                                                     var titleData = torrent.title_parsed_data.get(key)
@@ -331,7 +336,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         modifier = Modifier
                                                             .padding(2.dp)
                                                             .clip(RoundedCornerShape(4.dp))
-                                                            .background(MaterialTheme.colorScheme.surfaceContainer)
+                                                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                                                     ) {
                                                         Text(
                                                             "cached",
@@ -345,7 +350,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         modifier = Modifier
                                                             .padding(2.dp)
                                                             .clip(RoundedCornerShape(4.dp))
-                                                            .background(MaterialTheme.colorScheme.surfaceContainer)
+                                                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                                                     ) {
                                                         Text(
                                                             "owned",
@@ -359,10 +364,24 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         modifier = Modifier
                                                             .padding(2.dp)
                                                             .clip(RoundedCornerShape(4.dp))
-                                                            .background(MaterialTheme.colorScheme.surfaceContainer)
+                                                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                                                     ) {
                                                         Text(
                                                             "usenet",
+                                                            style = MaterialTheme.typography.bodySmall,
+                                                            modifier = Modifier.padding(4.dp)
+                                                        )
+                                                    }
+                                                }
+                                                if (torrent.size > 0) {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .padding(2.dp)
+                                                            .clip(RoundedCornerShape(4.dp))
+                                                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                                    ) {
+                                                        Text(
+                                                            Formatter.formatFileSize(context, torrent.size),
                                                             style = MaterialTheme.typography.bodySmall,
                                                             modifier = Modifier.padding(4.dp)
                                                         )
