@@ -60,18 +60,18 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
         loadingText = "Just a sec..."
         shouldLoad = true
         joinAll(launch {
-           try{
-               if (arguments.type == "tv") {
-                   torrentResults = torboxAPI.searchTorrents(arguments.remoteId, arguments.season, arguments.episode)
-                       .getJSONObject("data").getJSONArray("torrents")
-               } else if (arguments.type == "movie") {
-                   torrentResults =
-                       torboxAPI.searchTorrentsId(arguments.remoteId).getJSONObject("data").getJSONArray("torrents")
-               }
-           }catch(e: Exception){
-               Toast.makeText(context, "Failed to get torrent search results.", Toast.LENGTH_LONG).show()
-               Log.d("dev.ech0.torbox",e.toString())
-           }
+            try {
+                if (arguments.type == "tv") {
+                    torrentResults = torboxAPI.searchTorrents(arguments.remoteId, arguments.season, arguments.episode)
+                        .getJSONObject("data").getJSONArray("torrents")
+                } else if (arguments.type == "movie") {
+                    torrentResults =
+                        torboxAPI.searchTorrentsId(arguments.remoteId).getJSONObject("data").getJSONArray("torrents")
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Failed to get torrent search results.", Toast.LENGTH_LONG).show()
+                Log.d("dev.ech0.torbox", e.toString())
+            }
             for (i in 0 until torrentResults.length()) {
                 val torrent = torrentResults.getJSONObject(i)
                 val titleParsedData = torrent.getJSONObject("title_parsed_data")
@@ -91,9 +91,9 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                         usenetResults =
                             torboxAPI.searchUsenetId(arguments.remoteId).getJSONObject("data").getJSONArray("nzbs")
                     }
-                }catch (e: Exception){
+                } catch (e: Exception) {
                     Toast.makeText(context, "Failed to get usenet search results.", Toast.LENGTH_LONG).show()
-                    Log.d("dev.ech0.torbox",e.toString())
+                    Log.d("dev.ech0.torbox", e.toString())
                 }
                 for (i in 0 until usenetResults.length()) {
                     val usenet = usenetResults.getJSONObject(i)
@@ -107,12 +107,22 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
             }
         })
         results = results.shuffled().sortedByDescending {
-            when{
+            when {
                 it.owned -> Int.MAX_VALUE
-                it.cached -> Int.MAX_VALUE-1
-                it.title_parsed_data.has("resolution") -> it.title_parsed_data.getString("resolution").replace("p", "").toIntOrNull() ?: 0
+                it.cached -> Int.MAX_VALUE - 1
+
                 else -> -1
             }
+            var score = 0
+            if (it.owned) {
+                score += 1000000
+            } else if (it.cached) {
+                score += 100000
+            }
+            if (it.title_parsed_data.has("resolution")) {
+                score += it.title_parsed_data.getString("resolution").replace("p", "").toIntOrNull() ?: 0
+            }
+            score
         }
 
         shouldLoad = false
@@ -203,38 +213,25 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             )
                                                             loadingText = "Just a sec... (3/4)"
 
-                                                            val cached = cachedRaw
-                                                                .getJSONObject("data")
-                                                                .getJSONObject(
-                                                                    cachedRaw
-                                                                        .getJSONObject("data")
-                                                                        .keys()
-                                                                        .next()
-                                                                )
-                                                                .getJSONArray("files")
+                                                            val cached = cachedRaw.getJSONObject("data").getJSONObject(
+                                                                cachedRaw.getJSONObject("data").keys().next()
+                                                            ).getJSONArray("files")
 
                                                             if (arguments.type == "tv") {
                                                                 for (i in 0 until cached.length()) {
-                                                                    if (cached
-                                                                            .getJSONObject(i)
-                                                                            .getString("name")
+                                                                    if (cached.getJSONObject(i).getString("name")
                                                                             .contains(
                                                                                 "S${
-                                                                                    arguments.season
-                                                                                        .toString()
+                                                                                    arguments.season.toString()
                                                                                         .padStart(2, '0')
                                                                                 }E${
-                                                                                    arguments.episode
-                                                                                        .toString()
+                                                                                    arguments.episode.toString()
                                                                                         .padStart(2, '0')
                                                                                 }", ignoreCase = true
-                                                                            ) || cached
-                                                                            .getJSONObject(i)
-                                                                            .getString("name")
-                                                                            .contains(
+                                                                            ) || cached.getJSONObject(i)
+                                                                            .getString("name").contains(
                                                                                 "- ${
-                                                                                    arguments.episode
-                                                                                        .toString()
+                                                                                    arguments.episode.toString()
                                                                                         .padStart(2, '0')
                                                                                 }"
                                                                             )
@@ -257,21 +254,13 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                                 }
                                                             } else {
                                                                 for (i in 0 until cached.length()) {
-                                                                    if (cached
-                                                                            .getJSONObject(i)
-                                                                            .getString("name")
-                                                                            .any {
-                                                                                it
-                                                                                    .toString()
-                                                                                    .endsWith("mkv") || it
-                                                                                    .toString()
-                                                                                    .endsWith("mp4") || it
-                                                                                    .toString()
-                                                                                    .endsWith("mov") || it
-                                                                                    .toString()
-                                                                                    .endsWith("avi")
-                                                                            }
-                                                                    ) {
+                                                                    if (cached.getJSONObject(i).getString("name").any {
+                                                                            it.toString()
+                                                                                .endsWith("mkv") || it.toString()
+                                                                                .endsWith("mp4") || it.toString()
+                                                                                .endsWith("mov") || it.toString()
+                                                                                .endsWith("avi")
+                                                                        }) {
                                                                         fileId = i
                                                                     }
                                                                 }
@@ -281,15 +270,14 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         if (torrent.usenet) {
                                                             Log.d("dev.ech0.torbox", newTorrent.toString())
                                                             linkJSON = torboxAPI.getUsenetLink(
-                                                                newTorrent
-                                                                    .getJSONObject("data")
+                                                                newTorrent.getJSONObject("data")
                                                                     .getInt("usenetdownload_id"), false
                                                             )
                                                         } else {
                                                             linkJSON = torboxAPI.getTorrentLink(
-                                                                newTorrent
-                                                                    .getJSONObject("data")
-                                                                    .getInt("torrent_id"), fileId, false
+                                                                newTorrent.getJSONObject("data").getInt("torrent_id"),
+                                                                fileId,
+                                                                false
                                                             )
                                                         }
                                                         loadingText = "Just a sec... (4/4)"
@@ -300,11 +288,9 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             )
                                                             context.startActivity(playVideo)
                                                         } catch (e: ActivityNotFoundException) {
-                                                            Toast
-                                                                .makeText(
-                                                                    context, "No video player found", Toast.LENGTH_SHORT
-                                                                )
-                                                                .show()
+                                                            Toast.makeText(
+                                                                context, "No video player found", Toast.LENGTH_SHORT
+                                                            ).show()
                                                         }
                                                         shouldLoad = false
                                                     }
@@ -323,6 +309,9 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                     }
                                                     if (key == "title") {
                                                         continue
+                                                    }
+                                                    if(titleData is Boolean){
+                                                        titleData = if(titleData) key else continue
                                                     }
                                                     Box(
                                                         modifier = Modifier
