@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Add
@@ -227,7 +228,7 @@ fun DownloadsPage() {
 
                     ) {
                     Column(
-                        modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.padding(24.dp).verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
                             Icons.Filled.Link, "Input Magnet URI", modifier = Modifier.padding(bottom = 0.dp)
