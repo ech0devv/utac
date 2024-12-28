@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.preference.PreferenceManager
 import dev.ech0.torbox.LocalNavController
 import dev.ech0.torbox.api.torboxAPI
 import dev.ech0.torbox.ui.components.DisplayError

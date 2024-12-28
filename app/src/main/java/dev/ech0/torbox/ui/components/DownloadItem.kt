@@ -36,12 +36,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.preference.PreferenceManager
 import dev.ech0.torbox.api.torboxAPI
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -59,6 +61,8 @@ fun DownloadItem(
     val haptics = LocalHapticFeedback.current
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -81,7 +85,8 @@ fun DownloadItem(
             Text(
                 text = download.getString("name"),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = if(preferences.getBoolean("blurDL", false)){Modifier.blur(5.dp)}else{Modifier}
             )
             Text(
                 text = "${download.getString("download_state")}, ↓${Formatter.formatFileSize(context, download.getDouble("download_speed").toLong())}/s${

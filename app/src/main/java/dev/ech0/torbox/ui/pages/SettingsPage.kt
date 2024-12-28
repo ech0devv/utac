@@ -59,6 +59,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
     var usenetChecked by remember { mutableStateOf(preferences.getBoolean("usenet", true)) }
     var adultChecked by remember { mutableStateOf(preferences.getBoolean("adultContent", false)) }
     var searchChecked by remember { mutableStateOf(preferences.getBoolean("searchTop", false)) }
+    var blurChecked by remember { mutableStateOf(preferences.getBoolean("blurDL", false)) }
     var openSourceDialog by remember { mutableStateOf(false) }
     var adultContentDialog by remember { mutableStateOf(false) }
     var showApikey by remember { mutableStateOf(false) }
@@ -405,6 +406,52 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                         } else {
                             Icon(
                                 imageVector = Icons.Filled.KeyboardArrowDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    }
+
+                }, modifier = Modifier.padding(all = 0.dp)
+            )
+        }
+        HorizontalDivider()
+        Row(
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Outlined.BlurOn,
+                "Blur download names",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Column() {
+                Text("Blur download names")
+                Text(
+                    "Blur download names, for testing and tech support.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.width(250.dp),
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = blurChecked, onCheckedChange = {
+                    preferences.edit().putBoolean("blurDL", it).apply(); blurChecked = it
+                }, thumbContent = {
+
+                    AnimatedContent(blurChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
                                 contentDescription = null,
                                 modifier = Modifier.size(SwitchDefaults.IconSize),
                             )
