@@ -168,7 +168,6 @@ fun DownloadsPage() {
                         .fillMaxSize()
                         .padding(bottom = 8.dp, top = 8.dp)
                 ) {
-                    Log.d("dev.ech0.torbox", currentFilter.toString())
                     items(
                         when (currentFilter) {
                             0 -> {
