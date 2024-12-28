@@ -4,6 +4,7 @@ import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
@@ -137,7 +138,6 @@ fun DownloadsPage() {
                     Crossfade(targetState = currentFilter == 0) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
-                            downloads = downloads.sortedBy {  it.getString("name") }
                         } else {
                             Icon(Icons.Filled.Add, "Add")
                         }
@@ -149,11 +149,6 @@ fun DownloadsPage() {
                     Crossfade(targetState = currentFilter == 1) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
-                            downloads = downloads.sortedByDescending {
-                                Instant.from(
-                                    DateTimeFormatter.ISO_INSTANT.parse(it.getString("created_at"))
-                                ).toEpochMilli()
-                            }
                         } else {
                             Icon(Icons.Filled.Add, "Add")
                         }
@@ -173,7 +168,23 @@ fun DownloadsPage() {
                         .fillMaxSize()
                         .padding(bottom = 8.dp, top = 8.dp)
                 ) {
-                    items(downloads) { download ->
+                    Log.d("dev.ech0.torbox", currentFilter.toString())
+                    items(
+                        when (currentFilter) {
+                            0 -> {
+                                downloads.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.getString("name") })
+                            }
+                            1 -> {
+                                downloads.sortedByDescending {
+                                    Instant.from(
+                                        DateTimeFormatter.ISO_INSTANT.parse(it.getString("created_at"))
+                                    ).toEpochMilli()
+                                }
+                            }
+                            else -> {
+                                downloads
+                            }
+                        }) { download ->
                         DownloadItem(
                             download,
                             setLoadingScreen = { shouldLoad = it },
