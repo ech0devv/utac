@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Campaign
@@ -37,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -86,7 +88,7 @@ fun DownloadItem(
                 text = download.getString("name"),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = if(preferences.getBoolean("blurDL", false)){Modifier.blur(5.dp)}else{Modifier}
+                modifier = if(preferences.getBoolean("blurDL", false)){Modifier.clip(RoundedCornerShape(6.dp)).blur(10.dp)}else{Modifier}
             )
             Text(
                 text = "${download.getString("download_state")}, ↓${Formatter.formatFileSize(context, download.getDouble("download_speed").toLong())}/s${
