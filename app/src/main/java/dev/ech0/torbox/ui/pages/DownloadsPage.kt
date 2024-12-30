@@ -66,6 +66,7 @@ fun DownloadsPage(magnet: String = "") {
     var magnetText by remember { mutableStateOf("") }
     var selectedUri by remember { mutableStateOf("") }
     var currentFilter by remember { mutableStateOf(0) }
+    var openInPrompted by remember { mutableStateOf(false) }
     val torrentLoader = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
         try {
             val item = context.contentResolver.openInputStream(result!!)
@@ -110,9 +111,10 @@ fun DownloadsPage(magnet: String = "") {
                 }
             }
         }
-        if(magnet != ""){
+        if(magnet != "" && !openInPrompted){
             magnetPrompt = true
             magnetText = Uri.parse(magnet).toString()
+            openInPrompted = true
         }
     }
 
