@@ -15,8 +15,8 @@ android {
         applicationId = "dev.ech0.torbox"
         minSdk = 29
         targetSdk = 34
-        versionCode = 6
-        versionName = "1.1.2"
+        versionCode = 8
+        versionName = "1.2.1"
         
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
