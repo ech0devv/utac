@@ -1,5 +1,6 @@
 package dev.ech0.torbox
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -41,6 +42,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val intent = intent
+        val magnet = intent?.data
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
@@ -67,6 +70,9 @@ class MainActivity : ComponentActivity() {
                         torboxAPI =
                             preferences.getString("apiKey", "__")
                                 ?.let { it1 -> TorboxAPI(it1, navController) }!!
+                        if(magnet != null){
+                            navController.navigate("Downloads/${Uri.encode(magnet.toString())}")
+                        }
                     }
                 }
 
@@ -87,7 +93,10 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable("Downloads") {
-                DownloadsPage()
+                DownloadsPage("")
+            }
+            composable("Downloads/{magnet}", arguments = listOf(navArgument("magnet"){type = NavType.StringType; defaultValue = "" })) { backStackEntry ->
+                DownloadsPage(backStackEntry.arguments?.getString("magnet")!!)
             }
             composable("Watch") {
                 WatchSearchPage()

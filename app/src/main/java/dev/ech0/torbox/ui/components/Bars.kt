@@ -47,7 +47,11 @@ fun NavBar(
     val unselectedIcons = listOf(Icons.Outlined.Search, Icons.Outlined.Tv, Icons.Outlined.Download, Icons.Outlined.Settings)
 
     navController.addOnDestinationChangedListener{_, destination, _ ->
-        selectedItem = items.indexOf(destination.route)
+        selectedItem = items.indexOf(if(destination.route.toString().contains("/")){
+            destination.route.toString().split("/")[0]
+        }else{
+            destination.route.toString()
+        })
     }
     Column{
         if(preferences.getBoolean("amoled", false)){

@@ -52,7 +52,7 @@ import java.time.format.DateTimeFormatter
     ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class
 )
 @Composable
-fun DownloadsPage() {
+fun DownloadsPage(magnet: String = "") {
     val navController = LocalNavController.current
 
     val scope = rememberCoroutineScope()
@@ -110,7 +110,10 @@ fun DownloadsPage() {
                 }
             }
         }
-
+        if(magnet != ""){
+            magnetPrompt = true
+            magnetText = Uri.parse(magnet).toString()
+        }
     }
 
 
