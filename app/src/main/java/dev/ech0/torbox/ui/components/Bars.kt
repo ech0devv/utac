@@ -55,7 +55,6 @@ fun NavBar(
     }
     Column{
         if(preferences.getBoolean("amoled", false)){
-            Log.d("dev.ech0.torbox", "amoled")
             HorizontalDivider()
         }
         NavigationBar {

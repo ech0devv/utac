@@ -19,6 +19,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
 import dev.ech0.torbox.R
+import dev.ech0.torbox.api.Trakt
 import dev.ech0.torbox.api.traktApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,6 +49,7 @@ fun TraktPrompt(dismiss: () -> Unit, navController: NavController) {
                 val resp = traktApi.getRefreshToken(traktResponseJSON.getString("device_code"))
                 if (resp != "") {
                     preferences.edit().putString("traktToken", resp).apply()
+                    traktApi = Trakt(preferences)
                     dismiss()
                     traktResponded = false
                 }
@@ -91,10 +93,6 @@ fun TraktPrompt(dismiss: () -> Unit, navController: NavController) {
                         )
                     }
                     Button(onClick = {
-                        Log.d(
-                            "dev.ech0.torbox",
-                            traktResponseJSON.getString("verification_url") + "/${traktResponseJSON.getString("user_code")}"
-                        )
                         uriHandler.openUri(
                             traktResponseJSON.getString("verification_url") + "/${
                                 traktResponseJSON.getString(
@@ -110,7 +108,7 @@ fun TraktPrompt(dismiss: () -> Unit, navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(IntrinsicSize.Min)
-                            .zIndex(2f) // Ensure this box is above other content
+                            .zIndex(2f)
                     ) {
                         LoadingScreen()
                     }

@@ -273,30 +273,25 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
         return json
     }
     suspend fun getTorrentInfo(query: String): JSONObject{
-        Log.d("dev.ech0.torbox", query)
         val response = ktor.get(base + "torrents/torrentinfo?hash=${Uri.encode(query)}"){
             headers {
                 append(HttpHeaders.Authorization, "Bearer $key")
             }
         }
         val json = JSONObject(response.bodyAsText())
-        Log.d("dev.ech0.torbox", json.toString(2))
         if(!json.getBoolean("success")){
             throw IOException("Failed to search torrents with ${json.toString(2)}")
         }
-        Log.d("dev.ech0.torbox", json.toString(2))
         return json
     }
     suspend fun checkApiKey(toCheck: String, context: Context): Boolean{
         val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-        Log.d("dev.ech0.torbox", "step")
         val response = ktor.get(base + "user/me?settings=false"){
             headers {
                 append(HttpHeaders.Authorization, "Bearer $key")
             }
         }
         val json = JSONObject(response.bodyAsText())
-        Log.d("dev.ech0.torbox", "step")
         if(!json.getBoolean("success")){
             return false
         }

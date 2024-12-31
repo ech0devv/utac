@@ -72,7 +72,6 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                 }
             } catch (e: Exception) {
                 Toast.makeText(context, "Failed to get torrent search results.", Toast.LENGTH_LONG).show()
-                Log.d("dev.ech0.torbox", e.toString())
             }
             for (i in 0 until torrentResults.length()) {
                 val torrent = torrentResults.getJSONObject(i)
@@ -96,7 +95,6 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                     }
                 } catch (e: Exception) {
                     Toast.makeText(context, "Failed to get usenet search results.", Toast.LENGTH_LONG).show()
-                    Log.d("dev.ech0.torbox", e.toString())
                 }
                 for (i in 0 until usenetResults.length()) {
                     val usenet = usenetResults.getJSONObject(i)
@@ -246,7 +244,6 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                                 }
                                                                 if (fileIds.size == 1) {
                                                                     fileId = fileIds[0]
-                                                                    Log.d("dev.ech0.torbox", fileId.toString())
                                                                 } else {
                                                                     arguments.navController.navigate(
                                                                         "Error/${
@@ -272,7 +269,6 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         }
                                                         var linkJSON: JSONObject
                                                         if (torrent.usenet) {
-                                                            Log.d("dev.ech0.torbox", newTorrent.toString())
                                                             linkJSON = torboxAPI.getUsenetLink(
                                                                 newTorrent.getJSONObject("data")
                                                                     .getInt("usenetdownload_id"), false
