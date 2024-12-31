@@ -25,9 +25,6 @@ class TMDBApi(var preferences: SharedPreferences) {
     private val ktor = HttpClient(OkHttp){
     }
     init {
-        GlobalScope.launch(Dispatchers.IO) {
-            Log.d("dev.ech0.torbox", "got token")
-        }
     }
     suspend fun search(query: String): JSONArray{
         val response = ktor.get(base + "search/multi?query=${Uri.encode(query)}&include_adult=${preferences.getBoolean("adultContent", false)}"){

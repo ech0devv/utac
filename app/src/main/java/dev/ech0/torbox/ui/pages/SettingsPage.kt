@@ -23,8 +23,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -39,6 +38,7 @@ import dev.ech0.torbox.api.tmdbApi
 import dev.ech0.torbox.api.torboxAPI
 import dev.ech0.torbox.ui.components.ApiPrompt
 import dev.ech0.torbox.ui.components.LoadingScreen
+import dev.ech0.torbox.ui.components.TraktPrompt
 import dev.ech0.torbox.ui.theme.amoledScheme
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -50,6 +50,8 @@ import java.time.temporal.ChronoUnit
 @Composable
 fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
     var apiPrompt by remember { mutableStateOf(false) }
+    var traktPrompt by remember { mutableStateOf(false) }
+
     var shouldLoad by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
@@ -218,6 +220,27 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             )
         }*/
         Text(
+            "Tracking",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+        )
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .combinedClickable(onClick = {
+                    traktPrompt = true
+                }),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(painter = painterResource(R.drawable.trakt), contentDescription = "Trakt", modifier = Modifier.padding(end = 12.dp).size(20.dp), tint = MaterialTheme.colorScheme.primary)
+            Text("Log in to Trakt")
+            Spacer(Modifier.weight(1f))
+            Icon(
+                Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Text(
             "Configuration",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleSmall,
@@ -289,7 +312,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.width(250.dp),
 
-                )
+                    )
             }
             Spacer(Modifier.weight(1f))
             Switch(
@@ -534,7 +557,12 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 Text("Open source licenses", Modifier.padding(start = 8.dp))
             }
         }
-        Text(BuildConfig.VERSION_NAME, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), style = MaterialTheme.typography.bodySmall)
+        Text(
+            BuildConfig.VERSION_NAME,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.bodySmall
+        )
     }
     if (openSourceDialog) {
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
@@ -546,7 +574,10 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
         }
     }
     if (apiPrompt) {
-        ApiPrompt({apiPrompt = false}, navController)
+        ApiPrompt({ apiPrompt = false }, navController)
+    }
+    if(traktPrompt){
+        TraktPrompt({traktPrompt = false}, navController)
     }
     if (adultContentDialog) {
         val haptics = LocalHapticFeedback.current

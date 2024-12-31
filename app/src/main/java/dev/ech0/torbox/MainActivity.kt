@@ -2,6 +2,7 @@ package dev.ech0.torbox
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,10 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.preference.PreferenceManager
-import dev.ech0.torbox.api.TMDBApi
-import dev.ech0.torbox.api.TorboxAPI
-import dev.ech0.torbox.api.tmdbApi
-import dev.ech0.torbox.api.torboxAPI
+import dev.ech0.torbox.api.*
 import dev.ech0.torbox.ui.components.DisplayError
 import dev.ech0.torbox.ui.components.NavBar
 import dev.ech0.torbox.ui.components.TopBar
@@ -35,6 +33,7 @@ import dev.ech0.torbox.ui.pages.SettingsPage
 import dev.ech0.torbox.ui.pages.watch.WatchSearchPage
 import dev.ech0.torbox.ui.theme.AppTheme
 import dev.ech0.torbox.ui.theme.amoledScheme
+import kotlinx.coroutines.launch
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
 
@@ -73,6 +72,7 @@ class MainActivity : ComponentActivity() {
                         if(magnet != null){
                             navController.navigate("Downloads/${Uri.encode(magnet.toString())}")
                         }
+                        traktApi = Trakt(preferences)
                     }
                 }
 

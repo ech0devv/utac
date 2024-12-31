@@ -26,6 +26,10 @@ android {
         properties.load(project.rootProject.file("key.properties").inputStream())
         val tmdbKey = properties.getProperty("TMDB_KEY")
         buildConfigField("String", "TMDB_KEY", "$tmdbKey" )
+        val traktKey = properties.getProperty("TRAKT_KEY")
+        buildConfigField("String", "TRAKT_KEY", "$traktKey" )
+        val traktSecret = properties.getProperty("TRAKT_SECRET")
+        buildConfigField("String", "TRAKT_SECRET", "$traktSecret" )
     }
 
     buildTypes {
