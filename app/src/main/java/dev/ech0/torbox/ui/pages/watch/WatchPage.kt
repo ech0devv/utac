@@ -296,7 +296,7 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                     }
 
                                 }, onLongClick = {
-
+                                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                     scope.launch {
                                         if(watched){
                                             if(type == "movie"){
