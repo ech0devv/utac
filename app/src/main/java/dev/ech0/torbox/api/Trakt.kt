@@ -1,11 +1,9 @@
 package dev.ech0.torbox.api
 
 import android.content.SharedPreferences
-import android.util.Log
 import dev.ech0.torbox.BuildConfig
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,7 +17,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import kotlin.time.Duration.Companion.seconds
 
 lateinit var traktApi: Trakt
 
@@ -31,13 +28,16 @@ class Trakt(var preferences: SharedPreferences) {
 
     private lateinit var token: String
     private var lastConnect = 0L
-    private suspend fun throttle(){
+    private suspend fun throttle() {
         val now = System.currentTimeMillis()
         if (now - lastConnect < 1000) {
             delay(1000 - (now - lastConnect))
         }
         lastConnect = System.currentTimeMillis()
     }
+
+    private var loggedIn = false
+
     init {
         if (preferences.getString("traktToken", "") != "") {
             GlobalScope.launch(Dispatchers.IO) {
@@ -48,10 +48,14 @@ class Trakt(var preferences: SharedPreferences) {
                     } else {
                         token = it.getString("access_token")
                         preferences.edit().putString("traktToken", it.getString("refresh_token")).apply()
+                        loggedIn = true
                     }
                 }
             }
+        } else {
+            loggedIn = false
         }
+
     }
 
     suspend fun getAuthCode(): JSONObject {
@@ -117,17 +121,18 @@ class Trakt(var preferences: SharedPreferences) {
     }
 
     suspend fun addShow(id: Long, season: Int, episode: Int) {
-        throttle()
-        val response = ktor.post(base + "sync/history") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
-            }
-            setBody(
-                JSONObject(
-                    """
+        if (loggedIn) {
+            throttle()
+            val response = ktor.post(base + "sync/history") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
+                setBody(
+                    JSONObject(
+                        """
                     {
                         "shows": [
                             {
@@ -148,24 +153,26 @@ class Trakt(var preferences: SharedPreferences) {
                         ]
                     }
                 """.trimIndent()
-                ).toString()
-            )
+                    ).toString()
+                )
+            }
+            val json = JSONObject(response.bodyAsText())
         }
-        val json = JSONObject(response.bodyAsText())
     }
 
     suspend fun addMovie(id: Long) {
-        throttle()
-        val response = ktor.post(base + "sync/history") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
-            }
-            setBody(
-                JSONObject(
-                    """
+        if (loggedIn) {
+            throttle()
+            val response = ktor.post(base + "sync/history") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
+                setBody(
+                    JSONObject(
+                        """
                     {
                         "movies": [
                             {
@@ -176,23 +183,27 @@ class Trakt(var preferences: SharedPreferences) {
                         ]
                     }
                 """.trimIndent()
-                ).toString()
-            )
-        }
-        val json = JSONObject(response.bodyAsText())
-    }
-    suspend fun removeShow(id: Long, season: Int, episode: Int) {
-        throttle()
-        val response = ktor.post(base + "sync/history/remove") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
+                    ).toString()
+                )
             }
-            setBody(
-                JSONObject(
-                    """
+            val json = JSONObject(response.bodyAsText())
+        }
+    }
+
+    suspend fun removeShow(id: Long, season: Int, episode: Int) {
+        if (loggedIn) {
+
+            throttle()
+            val response = ktor.post(base + "sync/history/remove") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
+                setBody(
+                    JSONObject(
+                        """
                     {
                         "shows": [
                             {
@@ -213,24 +224,27 @@ class Trakt(var preferences: SharedPreferences) {
                         ]
                     }
                 """.trimIndent()
-                ).toString()
-            )
+                    ).toString()
+                )
+            }
+            val json = JSONObject(response.bodyAsText())
         }
-        val json = JSONObject(response.bodyAsText())
     }
 
     suspend fun removeMovie(id: Long) {
-        throttle()
-        val response = ktor.post(base + "sync/history/remove") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
-            }
-            setBody(
-                JSONObject(
-                    """
+        if (loggedIn) {
+
+            throttle()
+            val response = ktor.post(base + "sync/history/remove") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
+                setBody(
+                    JSONObject(
+                        """
                     {
                         "movies": [
                             {
@@ -241,60 +255,73 @@ class Trakt(var preferences: SharedPreferences) {
                         ]
                     }
                 """.trimIndent()
-                ).toString()
-            )
+                    ).toString()
+                )
+            }
+            val json = JSONObject(response.bodyAsText())
         }
-        val json = JSONObject(response.bodyAsText())
     }
 
     suspend fun getWatchedShow(traktId: Long): JSONObject? {
-        throttle()
-        val response = ktor.get(base + "sync/history/shows/$traktId") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
+        if (loggedIn) {
+            throttle()
+            val response = ktor.get(base + "sync/history/shows/$traktId") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
             }
-        }
-        try{
-            val json = JSONArray(response.bodyAsText())
-            return JSONObject().put("data", json)
-        }catch(e: Exception) {
+            try {
+                val json = JSONArray(response.bodyAsText())
+                return JSONObject().put("data", json)
+            } catch (e: Exception) {
+                return null
+            }
+        } else {
             return null
         }
     }
 
     suspend fun getWatchedMovie(traktId: Long): JSONObject? {
-        throttle()
-        val response = ktor.get(base + "sync/history/movies/$traktId") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
+        if (loggedIn) {
+            throttle()
+            val response = ktor.get(base + "sync/history/movies/$traktId") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
             }
-        }
 
-        try{
-            val json = JSONArray(response.bodyAsText())
-            return json.optJSONObject(0) ?: null
-        }catch(e: Exception) {
+            try {
+                val json = JSONArray(response.bodyAsText())
+                return json.optJSONObject(0) ?: null
+            } catch (e: Exception) {
+                return null
+            }
+        } else {
             return null
         }
     }
 
     suspend fun getTraktIdFromTMDB(id: Long): Int {
-        throttle()
-        val response = ktor.get(base + "search/tmdb/$id") {
-            headers {
-                append(HttpHeaders.ContentType, "application/json")
-                append(HttpHeaders.Authorization, "Bearer $token")
-                append("trakt-api-key", BuildConfig.TRAKT_KEY)
-                append("trakt-api-version", "2")
+        if (loggedIn) {
+            throttle()
+            val response = ktor.get(base + "search/tmdb/$id") {
+                headers {
+                    append(HttpHeaders.ContentType, "application/json")
+                    append(HttpHeaders.Authorization, "Bearer $token")
+                    append("trakt-api-key", BuildConfig.TRAKT_KEY)
+                    append("trakt-api-version", "2")
+                }
             }
+            val json = JSONArray(response.bodyAsText()).getJSONObject(0)
+            return json.getJSONObject(json.getString("type")).getJSONObject("ids").getInt("trakt")
+        } else {
+            return 0
         }
-        val json = JSONArray(response.bodyAsText()).getJSONObject(0)
-        return json.getJSONObject(json.getString("type")).getJSONObject("ids").getInt("trakt")
     }
 }

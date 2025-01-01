@@ -294,7 +294,6 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                             traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JSONObject()
                                         }
                                     }
-
                                 }, onLongClick = {
                                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                     scope.launch {
