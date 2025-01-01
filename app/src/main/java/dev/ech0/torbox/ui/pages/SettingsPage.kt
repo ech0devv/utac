@@ -33,9 +33,7 @@ import coil3.compose.AsyncImage
 import dev.ech0.torbox.BuildConfig
 import dev.ech0.torbox.LocalNavController
 import dev.ech0.torbox.R
-import dev.ech0.torbox.api.TMDBApi
-import dev.ech0.torbox.api.tmdbApi
-import dev.ech0.torbox.api.torboxAPI
+import dev.ech0.torbox.api.*
 import dev.ech0.torbox.ui.components.ApiPrompt
 import dev.ech0.torbox.ui.components.LoadingScreen
 import dev.ech0.torbox.ui.components.TraktPrompt
@@ -252,6 +250,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                     .padding(16.dp)
                     .combinedClickable(onClick = {
                         preferences.edit().putString("traktToken", "").apply()
+                        traktApi = Trakt(preferences)
                     }), verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
