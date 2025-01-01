@@ -38,6 +38,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
             connectTimeoutMillis = 120000
             socketTimeoutMillis = 120000
         }
+
     }
     fun getApiKey(): String{
         return key

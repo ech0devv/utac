@@ -1,5 +1,6 @@
 package dev.ech0.torbox.ui.pages.watch
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Timer
@@ -35,9 +37,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import dev.ech0.torbox.api.tmdbApi
+import dev.ech0.torbox.api.traktApi
 import dev.ech0.torbox.optString
+import dev.ech0.torbox.ui.components.LoadingScreen
 import dev.ech0.torbox.ui.components.TorrentSelectDialog
 import dev.ech0.torbox.ui.components.TorrentSelectDialogArguments
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -49,7 +56,11 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
     var details by remember { mutableStateOf(JSONObject()) }
     var seasons by remember { mutableStateOf(arrayOfNulls<JSONObject>(0)) }
     var seasonCarouselState by remember { mutableStateOf(PagerState(pageCount = { 1 })) }
+    var traktResponse by remember { mutableStateOf(JSONObject()) }
+    var shouldLoad by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
+    val scope = rememberCoroutineScope()
+    var traktId by remember { mutableStateOf(0) }
     var torrentSelectDialogArgs by remember {
         mutableStateOf(
             TorrentSelectDialogArguments(
@@ -59,12 +70,15 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
     }
     var displayTorrentSelectDialog by remember { mutableStateOf(false) }
     LaunchedEffect(true) {
+        traktId = traktApi.getTraktIdFromTMDB(meta.getInt("id").toLong())
         if (type == "tv") {
+            traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JSONObject()
             details = tmdbApi.getTvDetails(meta.getInt("id"))
             seasons = arrayOfNulls<JSONObject>(details.getInt("number_of_seasons"))
             seasons[0] = tmdbApi.getSeasonDetails(meta.getInt("id"), 1)
             seasonCarouselState = PagerState(pageCount = { seasons.size })
         } else if (type == "movie") {
+            traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JSONObject()
             details = tmdbApi.getMovieDetails(meta.getInt("id"))
             seasons = arrayOfNulls<JSONObject>(1)
             seasons[0] = JSONObject(
@@ -75,13 +89,16 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                         {
                             "episode_number": 1,
                             "name": "Movie",
-                            "runtime": ${details.getInt("runtime")}
+                            "runtime": ${details.getInt("runtime")},
+                            "watched": ${traktApi.getWatchedMovie(traktId.toLong()) != null}
                         }
                     ]
                     
                 }
             """.trimIndent()
             )
+            // recompose
+            seasonCarouselState = PagerState(pageCount = { 1 })
         }
     }
     LaunchedEffect(seasonCarouselState) {
@@ -195,43 +212,61 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                 maxLines = 2
             )
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 12.dp)
-        ) {
-            Icon(
-                Icons.Filled.KeyboardDoubleArrowLeft,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(start = 8.dp)
-            )
-            HorizontalPager(state = seasonCarouselState, modifier = Modifier.weight(1f)) { i ->
-                Text(
-                    text = "Season ${i + 1}",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            Icon(
-                Icons.Filled.KeyboardDoubleArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(end = 8.dp)
-            )
-        }
         Crossfade(targetState = seasonCarouselState.currentPage) { state ->
             Column(modifier = Modifier.fillMaxSize()) {
                 if (seasons.size > state && seasons[state] != null) {
+                    if(type == "tv") {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 12.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.KeyboardDoubleArrowLeft,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(start = 8.dp)
+                            )
+                            HorizontalPager(state = seasonCarouselState, modifier = Modifier.weight(1f)) { i ->
+                                Text(
+                                    text = "Season ${i + 1}",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+
+                            Icon(
+                                Icons.Filled.KeyboardDoubleArrowRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(end = 8.dp)
+                            )
+                        }
+                    }
                     for (i in 0 until seasons[state]!!.getJSONArray("episodes").length()) {
                         val episode = seasons[state]!!.getJSONArray("episodes").getJSONObject(i)
+                        var watched = false
+                        if(type == "tv"){
+                            if(traktResponse.has("data")){
+                                for(k in 0 until traktResponse.getJSONArray("data").length()){
+                                    val episodeObject = traktResponse.getJSONArray("data").getJSONObject(k).getJSONObject("episode")
+                                    if(episodeObject.getInt("season") == state + 1 && episodeObject.getInt("number") == i + 1){
+                                        watched = true
+                                    }
+                                }
+                            }
+                        }else{
+                            if(traktResponse.has("type")){
+                                watched = true
+                            }
+                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -250,9 +285,37 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                         }, navController = navController
                                     )
                                     displayTorrentSelectDialog = true
+                                    scope.launch {
+                                        if(type == "movie"){
+                                            traktApi.addMovie(meta.getInt("id").toLong())
+                                            traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JSONObject()
+                                        }else{
+                                            traktApi.addShow(meta.getInt("id").toLong(), state + 1, i + 1)
+                                            traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JSONObject()
+                                        }
+                                    }
+
                                 }, onLongClick = {
-                                    overviewDialogContent = episode.getString("overview") ?: ""
-                                    overviewDialog = true
+
+                                    scope.launch {
+                                        if(watched){
+                                            if(type == "movie"){
+                                                traktApi.removeMovie(meta.getInt("id").toLong())
+                                                traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JSONObject()
+                                            }else{
+                                                traktApi.removeShow(meta.getInt("id").toLong(), state + 1, i + 1)
+                                                traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JSONObject()
+                                            }
+                                        }else{
+                                            if(type == "movie"){
+                                                traktApi.addMovie(meta.getInt("id").toLong())
+                                                traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JSONObject()
+                                            }else{
+                                                traktApi.addShow(meta.getInt("id").toLong(), state + 1, i + 1)
+                                                traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JSONObject()
+                                            }
+                                        }
+                                    }
                                 })
                         ) {
                             if (episode.has("still_path")) {
@@ -265,7 +328,12 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                     modifier = Modifier
                                         .blur(25.dp)
                                         .graphicsLayer { alpha = 0.5f }
-                                        .matchParentSize())
+                                        .matchParentSize().drawWithContent {
+                                            drawContent()
+                                            if(watched){
+                                                drawRect(Color.Black.copy(alpha = 0.9f))
+                                            }
+                                        })
 
                             }
                             Row(
@@ -279,13 +347,15 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                         .padding(8.dp)
                                         .weight(1f)
                                 ) {
-                                    Text(
-                                        "${i + 1}. ${episode.getString("name")}",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = Modifier.padding(2.dp),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-                                    )
+                                        Text(
+                                            "${i + 1}. ${episode.getString("name")}",
+                                            style = MaterialTheme.typography.titleLarge,
+                                            modifier = Modifier.padding(2.dp),
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Spacer(modifier = Modifier.weight(1f))
+
                                     if (episode.has("overview")) {
                                         Text(
                                             episode.getString("overview"),
@@ -320,13 +390,20 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
+                                    if(watched){
+                                        Row(modifier = Modifier.align(Alignment.CenterHorizontally)){
+                                            Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+                                        }
+                                    }
                                 }
                             }
                         }
 
                     }
                 } else {
-                    Text("...")
+                    Column(Modifier.fillMaxSize().padding(top = 16.dp)) {
+                        LoadingScreen()
+                    }
                 }
             }
         }
@@ -362,4 +439,5 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
     if (displayTorrentSelectDialog) {
         TorrentSelectDialog(torrentSelectDialogArgs)
     }
+
 }

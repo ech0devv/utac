@@ -77,9 +77,8 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             .graphicsLayer {
                 if (shouldLoad) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        renderEffect = RenderEffect
-                            .createBlurEffect(25f, 25f, Shader.TileMode.MIRROR)
-                            .asComposeRenderEffect()
+                        renderEffect =
+                            RenderEffect.createBlurEffect(25f, 25f, Shader.TileMode.MIRROR).asComposeRenderEffect()
                     }
                 }
             }
@@ -225,20 +224,50 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(start = 16.dp, top = 8.dp)
         )
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .combinedClickable(onClick = {
-                    traktPrompt = true
-                }),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(painter = painterResource(R.drawable.trakt), contentDescription = "Trakt", modifier = Modifier.padding(end = 12.dp).size(20.dp), tint = MaterialTheme.colorScheme.primary)
-            Text("Log in to Trakt")
-            Spacer(Modifier.weight(1f))
-            Icon(
-                Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        if (preferences.getString("traktToken", "") == "") {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .combinedClickable(onClick = {
+                        traktPrompt = true
+                    }), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.trakt),
+                    contentDescription = "Trakt",
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text("Log in to Trakt")
+                Spacer(Modifier.weight(1f))
+                Icon(
+                    Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }else{
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .combinedClickable(onClick = {
+                        preferences.edit().putString("traktToken", "").apply()
+                    }), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.trakt),
+                    contentDescription = "Trakt",
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(20.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text("Log out from Trakt")
+                Spacer(Modifier.weight(1f))
+                Icon(
+                    Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
         Text(
             "Configuration",
@@ -530,8 +559,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Column() {
                 Text("made with love by ech0", Modifier.padding(start = 8.dp))
             }
-        }
-        /*
+        }/*
                                                                 val playVideo = Intent(Intent.ACTION_VIEW)
                                                         playVideo.setDataAndType(
                                                             Uri.parse(linkJSON.getString("data")), "video/x-unknown"
@@ -576,8 +604,8 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
     if (apiPrompt) {
         ApiPrompt({ apiPrompt = false }, navController)
     }
-    if(traktPrompt){
-        TraktPrompt({traktPrompt = false}, navController)
+    if (traktPrompt) {
+        TraktPrompt({ traktPrompt = false }, navController)
     }
     if (adultContentDialog) {
         val haptics = LocalHapticFeedback.current
@@ -611,15 +639,10 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                             .clip(RoundedCornerShape(50.dp))
                             .background(MaterialTheme.colorScheme.errorContainer)
                             .combinedClickable(onClick = {}, onLongClick = {
-                                preferences
-                                    .edit()
-                                    .putBoolean("adultContent", true)
-                                    .apply()
+                                preferences.edit().putBoolean("adultContent", true).apply()
                                 adultChecked = true
                                 haptics.performHapticFeedback(hapticFeedbackType = HapticFeedbackType.LongPress)
-                                Toast
-                                    .makeText(context, "you horny fuck", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(context, "you horny fuck", Toast.LENGTH_SHORT).show()
                                 tmdbApi = TMDBApi(preferences)
                                 adultContentDialog = false
                             })

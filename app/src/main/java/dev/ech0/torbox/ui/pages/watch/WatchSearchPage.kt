@@ -102,11 +102,6 @@ fun WatchSearchPage() {
                                             (it.has("name") || it.has("title")) && (it.getString("media_type") == "tv" || it.getString("media_type") == "movie")
                                         }.sortedByDescending {
                                             var score = 0.0
-                                            Log.d(
-                                                "dev.ech0.torbox", "${it.optString("name").toString()}, ${
-                                                    it.optString("title").toString()
-                                                }, ${textFieldState.text.toString()}"
-                                            )
                                             if ((optString(it, "name") ?: optString(it, "title") ?: "").equals(
                                                     textFieldState.text.toString(), ignoreCase = true
                                                 )
