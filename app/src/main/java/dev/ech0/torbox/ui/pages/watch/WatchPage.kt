@@ -13,10 +13,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -223,14 +220,22 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                 .fillMaxWidth()
                                 .padding(bottom = 12.dp)
                         ) {
-                            Icon(
-                                Icons.Filled.KeyboardDoubleArrowLeft,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            IconButton(
                                 modifier = Modifier
                                     .size(24.dp)
-                                    .padding(start = 8.dp)
-                            )
+                                    .padding(start = 8.dp),
+                                onClick = {
+                                    scope.launch {
+                                        seasonCarouselState.animateScrollToPage(seasonCarouselState.currentPage-1)
+                                    }
+                                }
+                            ){
+                                Icon(
+                                    Icons.Filled.KeyboardDoubleArrowLeft,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                             HorizontalPager(state = seasonCarouselState, modifier = Modifier.weight(1f)) { i ->
                                 Text(
                                     text = "Season ${i + 1}",
@@ -240,14 +245,22 @@ fun WatchPage(meta: JSONObject, navController: NavController) {
                                 )
                             }
 
-                            Icon(
-                                Icons.Filled.KeyboardDoubleArrowRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            IconButton(
                                 modifier = Modifier
                                     .size(24.dp)
-                                    .padding(end = 8.dp)
-                            )
+                                    .padding(end = 8.dp),
+                                onClick = {
+                                    scope.launch {
+                                        seasonCarouselState.animateScrollToPage(seasonCarouselState.currentPage+1)
+                                    }
+                                }
+                            ){
+                                Icon(
+                                    Icons.Filled.KeyboardDoubleArrowRight,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                     for (i in 0 until seasons[state]!!.getJSONArray("episodes").length()) {
