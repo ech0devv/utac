@@ -41,6 +41,10 @@ import dev.ech0.torbox.ui.theme.amoledScheme
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -69,18 +73,17 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             torboxAPI.checkApiKey(torboxAPI.getApiKey(), context)
         }
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .graphicsLayer {
-                if (shouldLoad) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        renderEffect =
-                            RenderEffect.createBlurEffect(25f, 25f, Shader.TileMode.MIRROR).asComposeRenderEffect()
-                    }
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .graphicsLayer {
+            if (shouldLoad) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    renderEffect =
+                        RenderEffect.createBlurEffect(25f, 25f, Shader.TileMode.MIRROR).asComposeRenderEffect()
                 }
             }
-            .verticalScroll(rememberScrollState())) {
+        }
+        .verticalScroll(rememberScrollState())) {
         Text(
             "Account",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -244,7 +247,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                     Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-        }else{
+        } else {
             Row(
                 modifier = Modifier
                     .padding(16.dp)
@@ -294,32 +297,32 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = adultChecked, onCheckedChange = {
-                    if (!it) {
-                        preferences.edit().putBoolean("adultContent", false).apply()
-                        Toast.makeText(context, "good boy", Toast.LENGTH_SHORT).show()
-                        adultChecked = it
+                if (!it) {
+                    preferences.edit().putBoolean("adultContent", false).apply()
+                    Toast.makeText(context, "good boy", Toast.LENGTH_SHORT).show()
+                    adultChecked = it
+                } else {
+                    adultContentDialog = true
+                }
+            }, thumbContent = {
+                AnimatedContent(adultChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     } else {
-                        adultContentDialog = true
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     }
-                }, thumbContent = {
-                    AnimatedContent(adultChecked, transitionSpec = {
-                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                    }) { checked ->
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    }
-                }, modifier = Modifier.padding(all = 0.dp)
+                }
+            }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -345,26 +348,26 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = usenetChecked, onCheckedChange = {
-                    preferences.edit().putBoolean("usenet", it).apply(); usenetChecked = it;
-                }, enabled = preferences.getInt("plan", 4) == 2, thumbContent = {
-                    AnimatedContent(usenetChecked, transitionSpec = {
-                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                    }) { checked ->
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
+                preferences.edit().putBoolean("usenet", it).apply(); usenetChecked = it;
+            }, enabled = preferences.getInt("plan", 4) == 2, thumbContent = {
+                AnimatedContent(usenetChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     }
-                }, modifier = Modifier.padding(all = 0.dp)
+                }
+            }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         Text(
@@ -395,30 +398,30 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = amoChecked, onCheckedChange = {
-                    preferences.edit().putBoolean("amoled", it).apply(); amoChecked = it; if (it) {
-                    setColorScheme(amoledScheme)
-                } else {
-                    setColorScheme(null)
-                }
-                }, thumbContent = {
-                    AnimatedContent(amoChecked, transitionSpec = {
-                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                    }) { checked ->
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
+                preferences.edit().putBoolean("amoled", it).apply(); amoChecked = it; if (it) {
+                setColorScheme(amoledScheme)
+            } else {
+                setColorScheme(null)
+            }
+            }, thumbContent = {
+                AnimatedContent(amoChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     }
-                }, modifier = Modifier.padding(all = 0.dp)
+                }
+            }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -443,28 +446,28 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = searchChecked, onCheckedChange = {
-                    preferences.edit().putBoolean("searchTop", it).apply(); searchChecked = it
-                }, thumbContent = {
+                preferences.edit().putBoolean("searchTop", it).apply(); searchChecked = it
+            }, thumbContent = {
 
-                    AnimatedContent(searchChecked, transitionSpec = {
-                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                    }) { checked ->
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowUp,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.KeyboardArrowDown,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
+                AnimatedContent(searchChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowUp,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowDown,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     }
+                }
 
-                }, modifier = Modifier.padding(all = 0.dp)
+            }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -489,28 +492,28 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = blurChecked, onCheckedChange = {
-                    preferences.edit().putBoolean("blurDL", it).apply(); blurChecked = it
-                }, thumbContent = {
+                preferences.edit().putBoolean("blurDL", it).apply(); blurChecked = it
+            }, thumbContent = {
 
-                    AnimatedContent(blurChecked, transitionSpec = {
-                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                    }) { checked ->
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Filled.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
+                AnimatedContent(blurChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
                     }
+                }
 
-                }, modifier = Modifier.padding(all = 0.dp)
+            }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         Text(
@@ -524,12 +527,19 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
         ) {
             Icon(
                 Icons.Outlined.Celebration,
-                "Merry Christmas, happy Hanukkah",
+                "ech0's birthday in ... days",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(end = 8.dp)
             )
             Column() {
-                Text("Merry Christmas, happy Hanukkah", Modifier.padding(start = 8.dp))
+                Text(
+                    "ech0's birthday in ${
+                        ChronoUnit.DAYS.between(
+                            ZonedDateTime.now(ZoneId.of("America/New_York")),
+                            ZonedDateTime.of(2025, 1, 26, 9, 30, 0, 0, ZoneId.of("America/New_York"))
+                        )
+                    } days", Modifier.padding(start = 8.dp)
+                )
             }
         }
         HorizontalDivider()
