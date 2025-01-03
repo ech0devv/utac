@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
 
 class MainActivity : ComponentActivity() {
-    // meow234
+    // meow2345
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = intent
