@@ -2,50 +2,30 @@ package dev.ech0.torbox.ui.components
 
 import android.net.Uri
 import android.text.format.Formatter
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.InsertDriveFile
-import androidx.compose.material.icons.filled.Campaign
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
+import dev.ech0.torbox.IconButtonLongClickable
 import dev.ech0.torbox.api.torboxAPI
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -64,20 +44,16 @@ fun DownloadItem(
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val preferences = remember { PreferenceManager.getDefaultSharedPreferences(context) }
+    val clipboardManager = LocalClipboardManager.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 20.dp)
-            .combinedClickable(
-                onClick = {},
-                onLongClick = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    expanded = true
-                }
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+            .combinedClickable(onClick = {}, onLongClick = {
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                expanded = true
+            }), verticalAlignment = Alignment.CenterVertically) {
         Icon(
             if (download.has("seeds")) Icons.AutoMirrored.Filled.InsertDriveFile else Icons.Filled.Newspaper,
             "File",
@@ -88,17 +64,26 @@ fun DownloadItem(
                 text = download.getString("name"),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = if(preferences.getBoolean("blurDL", false)){Modifier.clip(RoundedCornerShape(6.dp)).blur(10.dp)}else{Modifier}
+                modifier = if (preferences.getBoolean("blurDL", false)) {
+                    Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .blur(10.dp)
+                } else {
+                    Modifier
+                }
             )
             Text(
-                text = "${download.getString("download_state")}, ↓${Formatter.formatFileSize(context, download.getDouble("download_speed").toLong())}/s${
+                text = "${download.getString("download_state")}, ↓${
+                    Formatter.formatFileSize(
+                        context,
+                        download.getDouble("download_speed").toLong()
+                    )
+                }/s${
                     if (download.has(
                             "seeds"
                         )
                     ) ", ↑${Formatter.formatFileSize(context, download.getDouble("upload_speed").toLong())}/s" else ""
-                }",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                }", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             fun handleClick(action: String) {
                 expanded = false
@@ -135,26 +120,16 @@ fun DownloadItem(
                     DropdownMenuItem(
                         onClick = { handleClick(action) },
                         text = { Text(text) },
-                        leadingIcon = { Icon(icon, text) }
-                    )
+                        leadingIcon = { Icon(icon, text) })
                 }
             }
         }
         if (download.getBoolean("cached")) {
-            IconButton(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(32.dp),
-                content = {
-                    Icon(
-                        Icons.Filled.Download,
-                        contentDescription = "download",
-                        modifier = Modifier.padding(4.dp)
-                    )
-                },
-                onClick = {
+            IconButtonLongClickable(
 
+                onClick = {
                     scope.launch {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         setLoadingScreen(true)
                         try {
                             if (download.has("seeds")) {
@@ -181,9 +156,46 @@ fun DownloadItem(
                         }
                         setLoadingScreen(false)
                     }
+                }, onLongClick = {
+                    scope.launch {
+                        setLoadingScreen(true)
+                        try {
+                            if (download.has("seeds")) {
+                                clipboardManager.setText(
+                                    AnnotatedString(
+                                        torboxAPI.getTorrentLink(
+                                            download.getInt(
+                                                "id"
+                                            ), download.getJSONArray("files").length() > 1
 
-                },
-                colors = IconButtonColors(
+                                        ).getString("data")
+                                    )
+                                )
+                            } else {
+                                clipboardManager.setText(
+                                    AnnotatedString(
+                                        torboxAPI.getUsenetLink(
+                                            download.getInt(
+                                                "id"
+                                            ), false
+
+                                        ).getString("data")
+                                    )
+                                )
+                            }
+                        } catch (e: Exception) {
+                            navController.navigate("Error/${Uri.encode(e.toString())}")
+                        }
+                        Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                        setLoadingScreen(false)
+                    }
+                }, modifier = Modifier
+                    .padding(start = 16.dp)
+                    .size(32.dp), content = {
+                    Icon(
+                        Icons.Filled.Download, contentDescription = "download", modifier = Modifier.padding(4.dp)
+                    )
+                }, colors = IconButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -198,22 +210,21 @@ fun DownloadItem(
                     modifier = Modifier.size(24.dp),
                     tint = MaterialTheme.colorScheme.tertiary
                 )
-            } else
-                if (download.getDouble("progress") == 0.0 || download.getString("download_state")
-                        .startsWith("stalled") || download.getString("download_state")
-                        .startsWith("checkingDL")
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(start = 16.dp)
-                            .size(24.dp)
-                    )
-                } else {
-                    CircularProgressIndicator(modifier = Modifier
+            } else if (download.getDouble("progress") == 0.0 || download.getString("download_state")
+                    .startsWith("stalled") || download.getString("download_state").startsWith("checkingDL")
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .size(24.dp)
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier
                         .padding(start = 16.dp)
                         .size(24.dp),
-                        progress = { download.getDouble("progress").toFloat() })
-                }
+                    progress = { download.getDouble("progress").toFloat() })
+            }
 
         }
 
