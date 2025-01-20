@@ -91,10 +91,15 @@ fun SearchPage() {
                         scope.launch {
                             try{
                                 shouldLoad = true
-                                val data =
+                                var data =
                                     torboxAPI.searchTorrents(textFieldState.text.toString()).getJSONObject("data")
                                         .getJSONArray("torrents")
                                 results = List(data.length()) { index -> data.getJSONObject(index) }
+                                if(preferences.getInt("plan", 4) == 2 && preferences.getBoolean("usenet", true)){
+                                    data = torboxAPI.searchUsenet(textFieldState.text.toString()).getJSONObject("data").getJSONArray("nzbs")
+                                    results = results.plus(List(data.length()) { index -> data.getJSONObject(index) })
+                                    results = results.shuffled()
+                                }
                                 shouldLoad = false
                             }catch(e: Exception){
                                 navController.navigate("Error/${Uri.encode(e.toString())}")

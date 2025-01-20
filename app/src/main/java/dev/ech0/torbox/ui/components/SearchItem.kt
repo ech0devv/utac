@@ -69,7 +69,7 @@ fun SearchItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            if (torrent.getString("type") == "torrent") Icons.AutoMirrored.Filled.InsertDriveFile else Icons.Filled.Newspaper,
+            if (torrent.getString("type") == "usenet") Icons.Filled.Newspaper else Icons.AutoMirrored.Filled.InsertDriveFile ,
             "File",
             modifier = Modifier.padding(end = 8.dp)
         )
@@ -80,7 +80,7 @@ fun SearchItem(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "${Formatter.formatFileSize(context, torrent.getLong("size"))}, ${torrent.getInt("last_known_seeders")} seeding",
+                text = "${Formatter.formatFileSize(context, torrent.getLong("size"))} ${if(torrent.getString("type") == "usenet") ", ${torrent.getInt("last_known_seeders")} seeding" else ""}",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -132,7 +132,11 @@ fun SearchItem(
                     scope.launch {
                         try {
                             setLoadingScreen(true)
-                            torboxAPI.createTorrent(torrent.getString("magnet"))
+                            if(torrent.getString("type") == "usenet"){
+                                torboxAPI.createUsenet(torrent.getString("nzb"))
+                            }else{
+                                torboxAPI.createTorrent(torrent.getString("magnet"))
+                            }
                             setLoadingScreen(false)
                             navController.navigate("Downloads")
                         } catch (e: Exception) {

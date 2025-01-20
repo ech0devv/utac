@@ -273,6 +273,18 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
         }
         return json
     }
+    suspend fun searchUsenet(query: String): JSONObject{
+        val response = ktor.get(base_search + "usenet/search/${Uri.encode(query)}?check_cache=true&check_owned=true"){
+            headers {
+                append(HttpHeaders.Authorization, "Bearer $key")
+            }
+        }
+        val json = JSONObject(response.bodyAsText())
+        if(!json.getBoolean("success")){
+            throw IOException("Failed to search torrents with ${json.toString(2)}")
+        }
+        return json
+    }
     suspend fun getTorrentInfo(query: String): JSONObject{
         val response = ktor.get(base + "torrents/torrentinfo?hash=${Uri.encode(query)}"){
             headers {
