@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.tmdbApi
+import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import dev.ech0.torbox.multiplatform.ui.components.WatchListItem
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -134,7 +135,7 @@ fun WatchSearchPage() {
                 }
             }
             if (shouldLoad) {
-                // TODO: LoadingScreen()
+                LoadingScreen()
             }
         } else {
            WatchPage(meta, navController)

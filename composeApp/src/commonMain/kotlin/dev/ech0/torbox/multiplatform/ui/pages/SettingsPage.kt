@@ -23,8 +23,9 @@ import androidx.compose.ui.window.Dialog
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.BuildConfig
 import dev.ech0.torbox.multiplatform.LocalNavController
-import dev.ech0.torbox.multiplatform.api.torboxAPI
+import dev.ech0.torbox.multiplatform.api.*
 import dev.ech0.torbox.multiplatform.ui.components.ApiPrompt
+import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -230,7 +231,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                     .padding(16.dp)
                     .combinedClickable(onClick = {
                         Settings().putString("traktToken", "")
-                        // TODO: traktApi = Trakt(Settings())
+                        traktApi = Trakt()
                     }), verticalAlignment = Alignment.CenterVertically
             ) {
                 /*Icon(
@@ -615,7 +616,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                                 Settings().putBoolean("adultContent", true)
                                 adultChecked = true
                                 haptics.performHapticFeedback(hapticFeedbackType = HapticFeedbackType.LongPress)
-                                // TODO: tmdbApi = TMDBApi(Settings())
+                                tmdbApi = TMDBApi()
                                 adultContentDialog = false
                             })
                     ) {
@@ -632,6 +633,6 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
         }
     }
     if (shouldLoad) {
-        //TODO: LoadingScreen()
+        LoadingScreen()
     }
 }

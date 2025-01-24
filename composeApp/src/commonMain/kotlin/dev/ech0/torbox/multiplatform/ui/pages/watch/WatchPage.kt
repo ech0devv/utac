@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import dev.ech0.torbox.multiplatform.api.tmdbApi
 import dev.ech0.torbox.multiplatform.api.traktApi
+import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import dev.ech0.torbox.multiplatform.ui.components.TorrentSelectDialogArguments
 import dev.ech0.torbox.multiplatform.ui.components.TorrentSelectDialog
 import kotlinx.coroutines.launch
@@ -386,7 +387,7 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
                     }
                 } else {
                     Column(Modifier.fillMaxSize().padding(top = 16.dp)) {
-                        //TODO: LoadingScreen()
+                        LoadingScreen()
                     }
                 }
             }

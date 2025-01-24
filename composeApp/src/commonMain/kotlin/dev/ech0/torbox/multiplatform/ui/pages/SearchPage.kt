@@ -30,6 +30,7 @@ import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.torboxAPI
+import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
@@ -129,6 +130,6 @@ fun SearchPage() {
     }
 
     if (shouldLoad) {
-        //TODO: LoadingScreen()
+        LoadingScreen()
     }
 }

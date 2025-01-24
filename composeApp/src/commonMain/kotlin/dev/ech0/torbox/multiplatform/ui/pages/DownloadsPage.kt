@@ -28,6 +28,7 @@ import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.torboxAPI
 import dev.ech0.torbox.multiplatform.ui.components.Download
 import dev.ech0.torbox.multiplatform.ui.components.DownloadItem
+import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import io.ktor.http.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -271,5 +272,6 @@ fun DownloadsPage(magnet: String = "") {
         }
     }
     if (shouldLoad) {
+        LoadingScreen()
     }
 }
