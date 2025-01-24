@@ -26,6 +26,7 @@ import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.*
 import dev.ech0.torbox.multiplatform.ui.components.ApiPrompt
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
+import dev.ech0.torbox.multiplatform.ui.components.TraktPrompt
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -579,7 +580,7 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
         ApiPrompt({ apiPrompt = false }, navController)
     }
     if (traktPrompt) {
-        // TODO: TraktPrompt({ traktPrompt = false }, navController)
+        TraktPrompt({ traktPrompt = false }, navController)
     }
     if (adultContentDialog) {
         val haptics = LocalHapticFeedback.current
