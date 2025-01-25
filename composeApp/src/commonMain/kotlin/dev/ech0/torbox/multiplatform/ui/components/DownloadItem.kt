@@ -21,8 +21,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
+import dev.ech0.torbox.multiplatform.LocalSnackbarHostState
 import dev.ech0.torbox.multiplatform.api.torboxAPI
 import dev.ech0.torbox.multiplatform.formatFileSize
+import dev.ech0.torbox.multiplatform.getPlatform
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -39,6 +41,7 @@ fun DownloadItem(
     val haptics = LocalHapticFeedback.current
     var expanded by remember { mutableStateOf(false) }
     val clipboardManager = LocalClipboardManager.current
+    val snackbarHostState = LocalSnackbarHostState.current
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp, horizontal = 20.dp)
             .combinedClickable(onClick = {}, onLongClick = {
@@ -115,7 +118,9 @@ fun DownloadItem(
             IconButtonLongClickable(
                 onClick = {
                     scope.launch {
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        if(!getPlatform().name.contains("Java")){
+                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
                         setLoadingScreen(true)
                         try {
                             if (download.seeds != null) {
@@ -160,9 +165,10 @@ fun DownloadItem(
                         } catch (e: Exception) {
                             navController.navigate("Error/${e.toString().encodeURLPath()}")
                         }
-                        // TODO: Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
                         setLoadingScreen(false)
+                        snackbarHostState.showSnackbar("Copied!")
                     }
+
                 }, modifier = Modifier.padding(start = 16.dp).size(32.dp), content = {
                     Icon(
                         Icons.Filled.Download, contentDescription = "download", modifier = Modifier.padding(4.dp)

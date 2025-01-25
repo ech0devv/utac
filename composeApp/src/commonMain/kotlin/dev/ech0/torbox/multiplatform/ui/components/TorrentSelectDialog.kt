@@ -15,6 +15,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
+import dev.ech0.torbox.multiplatform.LocalSnackbarHostState
+import dev.ech0.torbox.multiplatform.PlayVideo
 import dev.ech0.torbox.multiplatform.api.torboxAPI
 import dev.ech0.torbox.multiplatform.formatFileSize
 import io.ktor.http.*
@@ -50,6 +52,10 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
     var loadingText by remember { mutableStateOf("Just a sec...") }
     var shouldLoad by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val snackbarHostState = LocalSnackbarHostState.current
+
+    var playVideo by remember { mutableStateOf(false) }
+    var videoUrl by remember { mutableStateOf("") }
     LaunchedEffect(true) {
         loadingText = "Just a sec..."
         shouldLoad = true
@@ -65,7 +71,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                         torboxAPI.searchTorrents(arguments.remoteId)["data"]!!.jsonObject["torrents"]!!.jsonArray
                 }
             } catch (e: Exception) {
-                // TODO: Toast.makeText(context, "Failed to get torrent search results.", Toast.LENGTH_LONG).show()
+                snackbarHostState.showSnackbar("Failed to get torrent search results.")
             }
             for (i in 0 until torrentResults.size) {
                 val torrent = torrentResults[i].jsonObject
@@ -89,7 +95,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                             torboxAPI.searchUsenet(arguments.remoteId)["data"]!!.jsonObject["nzbs"]!!.jsonArray
                     }
                 } catch (e: Exception) {
-                    // TODO: Toast.makeText(context, "Failed to get usenet search results.", Toast.LENGTH_LONG).show()
+                    snackbarHostState.showSnackbar("Failed to get usenet search results.")
                 }
                 for (i in 0 until usenetResults.size) {
                     val usenet = usenetResults[i].jsonObject
@@ -202,14 +208,13 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         if (arguments.type == "tv") {
                                                             for (i in 0 until cached.size) {
                                                                 if (cached[i].jsonObject["name"]!!.jsonPrimitive.content.contains(
-                                                                            "S${
-                                                                                arguments.season.toString()
-                                                                                    .padStart(2, '0')
-                                                                            }E${
-                                                                                arguments.episode.toString()
-                                                                                    .padStart(2, '0')
-                                                                            }", ignoreCase = true
-                                                                        ) || cached[i].jsonObject["name"]!!.jsonPrimitive.content.contains(
+                                                                        "S${
+                                                                            arguments.season.toString().padStart(2, '0')
+                                                                        }E${
+                                                                            arguments.episode.toString()
+                                                                                .padStart(2, '0')
+                                                                        }", ignoreCase = true
+                                                                    ) || cached[i].jsonObject["name"]!!.jsonPrimitive.content.contains(
                                                                         "- ${
                                                                             arguments.episode.toString()
                                                                                 .padStart(2, '0')
@@ -225,7 +230,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             } else {
                                                                 arguments.navController.navigate(
                                                                     "Error/${
-                                                                            "Too many files that match found. Fix is coming in next release. Pick another torrent for now.".encodeURLPath()
+                                                                        "Too many files that match found. Fix is coming in next release. Pick another torrent for now.".encodeURLPath()
                                                                     }"
                                                                 )
                                                             }
@@ -245,7 +250,8 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                     var linkJSON: JsonObject
                                                     if (torrent.usenet) {
                                                         linkJSON = torboxAPI.getUsenetLink(
-                                                            newTorrent["data"]!!.jsonObject["usenetdownload_id"]!!.jsonPrimitive.int, false
+                                                            newTorrent["data"]!!.jsonObject["usenetdownload_id"]!!.jsonPrimitive.int,
+                                                            false
                                                         )
                                                     } else {
                                                         linkJSON = torboxAPI.getTorrentLink(
@@ -254,8 +260,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             false
                                                         )
                                                     }
-                                                    loadingText = "Just a sec... (4/4)"
-                                                    /* TODO: try {
+                                                    loadingText = "Just a sec... (4/4)"/* TODO: try {
                                                         val playVideo = Intent(Intent.ACTION_VIEW)
                                                         playVideo.setDataAndType(
                                                             Uri.parse(linkJSON.getString("data")), "video/x-unknown"
@@ -266,6 +271,8 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                             context, "No video player found", Toast.LENGTH_SHORT
                                                         ).show()
                                                     }*/
+                                                    videoUrl = linkJSON["data"]!!.jsonPrimitive.content
+                                                    playVideo = true
                                                     shouldLoad = false
                                                 }
                                             }
@@ -276,26 +283,26 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                             FlowRow {
                                                 for (key in torrent.title_parsed_data.keys) {
                                                     var titleData = torrent.title_parsed_data[key]
-                                                    var titleString = titleData.toString()
-                                                    if(titleData is JsonPrimitive){
+                                                    var titleString = ""
+                                                    if (titleData is JsonPrimitive) {
                                                         if (key == "bitDepth") {
-                                                            titleString = "${titleData!!.jsonPrimitive.content} bit"
-                                                        }
-                                                        if (key == "season") {
-                                                            titleString = "S${titleData!!.jsonPrimitive.content}"
-                                                        }
-                                                        if (key == "title") {
+                                                            titleString = "${titleData.jsonPrimitive.content} bit"
+                                                        } else if (key == "season") {
+                                                            titleString = "S${titleData.jsonPrimitive.content}"
+                                                        } else if (key == "title") {
                                                             continue
+                                                        } else if (titleData.jsonPrimitive.booleanOrNull != null) {
+                                                            titleString =
+                                                                if (titleData.jsonPrimitive.boolean) key else continue
+                                                        } else {
+                                                            titleString = titleData.jsonPrimitive.content
                                                         }
-                                                        if (titleData!!.jsonPrimitive.booleanOrNull != null) {
-                                                            titleString = if (titleData.jsonPrimitive.boolean) key else continue
-                                                        }
-                                                    }else if(titleData is JsonArray && key == "season"){
-                                                        titleString = "S${titleData.toString() }"
-                                                    }else{
+                                                    } else if (titleData is JsonArray && key == "season") {
+                                                        titleString = "S$titleData"
+                                                    } else {
                                                         continue
                                                     }
-                                                    if(titleString.isEmpty()){
+                                                    if (titleString.isEmpty()) {
                                                         continue
                                                     }
                                                     Box(
@@ -368,6 +375,10 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                 }
             }
         }
+    }
+    if (playVideo) {
+        PlayVideo(videoUrl)
+        playVideo = false
     }
 }
 

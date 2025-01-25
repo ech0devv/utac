@@ -10,12 +10,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.ech0.torbox.multiplatform.LocalSnackbarHostState
+import kotlinx.coroutines.launch
 
 val errorStrings = arrayOf(
     "oopsies :3",
@@ -49,6 +52,8 @@ fun DisplayError(
     what: String = Exception("Achievement get: How did we get here?").toString()
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val snackbarHostState = LocalSnackbarHostState.current
+    val scope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -96,7 +101,9 @@ fun DisplayError(
             Button(
                 onClick = {
                     clipboardManager.setText(AnnotatedString(what.toString()))
-                    //TODO: Toast.makeText(context, "Copied!", Toast.LENGTH_SHORT).show()
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Copied!")
+                    }
                 },
                 modifier = Modifier.padding(bottom = 8.dp)
             ) { Text("grab what()") }

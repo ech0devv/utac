@@ -365,7 +365,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
 
     suspend fun checkCache(hash: String): JsonObject {
         val response =
-            ktor.get(base + "torrents/checkcached?hash=\"${hash.encodeURLPath()}\"&format=object&list_files=true") {
+            ktor.get(base + "torrents/checkcached?hash=${hash.encodeURLPath()}&format=object&list_files=true") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
