@@ -139,7 +139,7 @@ compose.desktop {
         mainClass = "dev.ech0.torbox.multiplatform.MainKt"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.AppImage)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dev.ech0.torbox.multiplatform"
             packageVersion = version
         }
