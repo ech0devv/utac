@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,6 +26,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.compose.resources.painterResource
+import utac.composeapp.generated.resources.Res
+import utac.composeapp.generated.resources.trakt
 
 @Composable
 fun TraktPrompt(dismiss: () -> Unit, navController: NavController) {
@@ -61,9 +65,9 @@ fun TraktPrompt(dismiss: () -> Unit, navController: NavController) {
             modifier = Modifier.fillMaxWidth().padding(16.dp).wrapContentSize(),
         ) {
             Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                /* TODO: Icon(
-                    painterResource(R.drawable.trakt), "Input API Key", modifier = Modifier.padding(bottom = 0.dp)
-                )*/
+                Icon(
+                    painterResource(Res.drawable.trakt), "Input API Key", modifier = Modifier.padding(bottom = 0.dp), tint = MaterialTheme.colorScheme.primary
+                )
                 Text(
                     "Log in to Trakt",
                     style = MaterialTheme.typography.titleLarge,
