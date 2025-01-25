@@ -95,6 +95,8 @@ kotlin {
             implementation(libs.multiplatform.settings.no.arg)
             implementation(libs.coil3.coil.compose)
             implementation(libs.coil.network.ktor3)
+            implementation(compose.components.resources)
+            implementation(libs.coil.svg)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

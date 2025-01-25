@@ -28,6 +28,7 @@ okhttp = "5.0.0-alpha.14"
 
 [libraries]
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilComposeVersion" }
+coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion" }
 coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

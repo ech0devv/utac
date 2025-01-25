@@ -14,12 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import coil3.compose.AsyncImage
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.BuildConfig
 import dev.ech0.torbox.multiplatform.LocalNavController
@@ -36,6 +38,10 @@ import kotlinx.datetime.daysUntil
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.compose.resources.painterResource
+import utac.composeapp.generated.resources.Res
+import utac.composeapp.generated.resources.tmdb
+import utac.composeapp.generated.resources.trakt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -212,14 +218,14 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                         traktPrompt = true
                     }), verticalAlignment = Alignment.CenterVertically
             ) {
-                /*Icon(
-                    painter = painterResource(R.drawable.trakt),
+                Icon(
+                    painter = painterResource(Res.drawable.trakt),
                     contentDescription = "Trakt",
                     modifier = Modifier
                         .padding(end = 12.dp)
                         .size(20.dp),
                     tint = MaterialTheme.colorScheme.primary
-                )*/
+                )
                 Text("Log in to Trakt")
                 Spacer(Modifier.weight(1f))
                 Icon(
@@ -521,9 +527,12 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
         Row(
             modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            /*TODO: AsyncImage(
-                model = R.drawable.tmdb, contentDescription = null, modifier = Modifier.size(32.dp)
-            )*/
+            Icon(
+                painter = painterResource(Res.drawable.tmdb),
+                contentDescription = "TMDB Logo",
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
             Column() {
                 Text("Show metadata by TMDB", Modifier.padding(start = 8.dp))
             }
