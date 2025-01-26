@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.api.*
+import dev.ech0.torbox.multiplatform.theme.AppTheme
 import dev.ech0.torbox.multiplatform.ui.components.DisplayError
 import dev.ech0.torbox.multiplatform.ui.components.NavBar
 import dev.ech0.torbox.multiplatform.ui.components.TopBar
@@ -31,7 +32,13 @@ expect fun PlayVideo(videoUrl: String)
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    var colorScheme by remember {
+        mutableStateOf(Settings().getString("theme", "Torbox"))
+    }
+    var darkMode by remember {
+        mutableStateOf(Settings().getBoolean("dark", true))
+    }
+    AppTheme(themeName = colorScheme, darkTheme = darkMode) {
         var showContent by remember { mutableStateOf(false) }
         val navController = rememberNavController()
         val snackbarHostState = remember { SnackbarHostState() }
@@ -44,7 +51,7 @@ fun App() {
                 snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
                 modifier = Modifier.imePadding()
             ) { paddingValues ->
-                Navigation(navController, paddingValues) {}
+                Navigation(navController, paddingValues, { colorScheme = it }, { darkMode = it })
                 tmdbApi = TMDBApi()
                 torboxAPI = TorboxAPI(Settings().getString("apiKey", "__"), navController)
                 traktApi = Trakt()
@@ -56,7 +63,7 @@ fun App() {
 
 @Composable
 fun Navigation(
-    navController: NavHostController, paddingValues: PaddingValues, setColorScheme: (ColorScheme?) -> Unit
+    navController: NavHostController, paddingValues: PaddingValues, setColorScheme: (String) -> Unit, setDarkTheme: (Boolean) -> Unit
 ) {
     NavHost(
         navController = navController, startDestination = "Downloads", modifier = Modifier.padding(paddingValues)
@@ -71,7 +78,7 @@ fun Navigation(
             SearchPage()
         }
         composable("Settings") {
-            SettingsPage(setColorScheme)
+            SettingsPage(setColorScheme, setDarkTheme)
         }
         composable("Error/{what}") { backStackEntry ->
             val what = backStackEntry.arguments?.getString("what") ?: ""

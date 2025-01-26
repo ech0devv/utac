@@ -26,6 +26,8 @@ import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.BuildConfig
 import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.*
+import dev.ech0.torbox.multiplatform.theme.AppTheme
+import dev.ech0.torbox.multiplatform.theme.themes
 import dev.ech0.torbox.multiplatform.ui.components.ApiPrompt
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import dev.ech0.torbox.multiplatform.ui.components.TraktPrompt
@@ -45,7 +47,7 @@ import utac.composeapp.generated.resources.trakt
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
+fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) -> Unit) {
     var apiPrompt by remember { mutableStateOf(false) }
     var traktPrompt by remember { mutableStateOf(false) }
 
@@ -53,7 +55,8 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
     val scope = rememberCoroutineScope()
     val navController = LocalNavController.current
 
-    var amoChecked by remember { mutableStateOf(Settings().getBoolean("amoled", false)) }
+    var dropdownOpen by remember { mutableStateOf(false) }
+    var darkMode by remember { mutableStateOf(Settings().getBoolean("dark", true)) }
     var usenetChecked by remember { mutableStateOf(Settings().getBoolean("usenet", true)) }
     var adultChecked by remember { mutableStateOf(Settings().getBoolean("adultContent", false)) }
     var searchChecked by remember { mutableStateOf(Settings().getBoolean("searchTop", false)) }
@@ -67,10 +70,18 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             torboxAPI.checkApiKey(torboxAPI.getApiKey())
         }
     }
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .blur(if(shouldLoad){ 10.dp } else { 0.dp})
-        .verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .blur(
+                if (shouldLoad) {
+                    10.dp
+                } else {
+                    0.dp
+                }
+            )
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             "Account",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -141,7 +152,9 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Text("Set API Key")
             Spacer(Modifier.weight(1f))
             Icon(
-                Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                Icons.Filled.ArrowRight,
+                "Right Arrow",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         HorizontalDivider()
@@ -169,7 +182,9 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Text("Refresh account details")
             Spacer(Modifier.weight(1f))
             Icon(
-                Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                Icons.Filled.ArrowRight,
+                "Right Arrow",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }/*Text(
             "Configuration",
@@ -229,7 +244,9 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 Text("Log in to Trakt")
                 Spacer(Modifier.weight(1f))
                 Icon(
-                    Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Icons.Filled.ArrowRight,
+                    "Right Arrow",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         } else {
@@ -252,7 +269,9 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 Text("Log out from Trakt")
                 Spacer(Modifier.weight(1f))
                 Icon(
-                    Icons.Filled.ArrowRight, "Right Arrow", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    Icons.Filled.ArrowRight,
+                    "Right Arrow",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -282,31 +301,31 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = adultChecked, onCheckedChange = {
-                if (!it) {
-                    Settings().putBoolean("adultContent", false)
-                    adultChecked = it
-                } else {
-                    adultContentDialog = true
-                }
-            }, thumbContent = {
-                AnimatedContent(adultChecked, transitionSpec = {
-                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                }) { checked ->
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                    if (!it) {
+                        Settings().putBoolean("adultContent", false)
+                        adultChecked = it
                     } else {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                        adultContentDialog = true
                     }
-                }
-            }, modifier = Modifier.padding(all = 0.dp)
+                }, thumbContent = {
+                    AnimatedContent(adultChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    }
+                }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -332,26 +351,26 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = usenetChecked, onCheckedChange = {
-                Settings().putBoolean("usenet", it); usenetChecked = it;
-            }, enabled = Settings().getInt("plan", 4) == 2, thumbContent = {
-                AnimatedContent(usenetChecked, transitionSpec = {
-                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                }) { checked ->
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                    Settings().putBoolean("usenet", it); usenetChecked = it;
+                }, enabled = Settings().getInt("plan", 4) == 2, thumbContent = {
+                    AnimatedContent(usenetChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
                     }
-                }
-            }, modifier = Modifier.padding(all = 0.dp)
+                }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         Text(
@@ -371,41 +390,85 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
                 modifier = Modifier.padding(end = 8.dp)
             )
             Column() {
-                Text("Enable AMOLED Theme")
+                Text("Pick theme")
                 Text(
-                    "Makes colors black, saves battery on most smartphones.",
+                    "Make UTAC look all pretty :3",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.width(250.dp)
                 )
             }
             Spacer(Modifier.weight(1f))
-            Switch(
-                checked = amoChecked, onCheckedChange = {
-                Settings().putBoolean("amoled", it); amoChecked = it; if (it) {
-                // TODO: setColorScheme(amoledScheme)
-            } else {
-                setColorScheme(null)
-            }
-            }, thumbContent = {
-                AnimatedContent(amoChecked, transitionSpec = {
-                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                }) { checked ->
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
+            Box {
+                Button(onClick = {dropdownOpen = true}){
+                    Text("Pick")
+                }
+                DropdownMenu(expanded = dropdownOpen, onDismissRequest = { dropdownOpen = false }) {
+                    themes.forEach {
+                        val dark = Settings().getBoolean(
+                            "dark",
+                            true
                         )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                        AppTheme(it.key, dark){
+                            Box(modifier = Modifier.background(if(dark) it.value.backgroundDark else it.value.backgroundLight)){
+                                DropdownMenuItem(text = {
+                                    Column {
+                                        Text(it.key, style = MaterialTheme.typography.titleSmall)
+                                        Text(it.key, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }, onClick = {
+                                    setColorScheme(it.key)
+                                    dropdownOpen = false
+                                })
+                            }
+                        }
                     }
                 }
-            }, modifier = Modifier.padding(all = 0.dp)
+            }
+        }
+        HorizontalDivider()
+        Row(
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Outlined.DarkMode,
+                "Dark theme",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Column() {
+                Text("Dark theme")
+                Text(
+                    "Bravo Six, Going Dark",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.width(250.dp),
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Switch(
+                checked = darkMode, onCheckedChange = {
+                    Settings().putBoolean("dark", it); darkMode = it; setDarkTheme(it)
+                }, thumbContent = {
+                    AnimatedContent(darkMode, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.DarkMode,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.LightMode,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
+                    }
+
+                }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -430,28 +493,28 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = searchChecked, onCheckedChange = {
-                Settings().putBoolean("searchTop", it); searchChecked = it
-            }, thumbContent = {
+                    Settings().putBoolean("searchTop", it); searchChecked = it
+                }, thumbContent = {
 
-                AnimatedContent(searchChecked, transitionSpec = {
-                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                }) { checked ->
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowUp,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowDown,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                    AnimatedContent(searchChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowUp,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.KeyboardArrowDown,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
                     }
-                }
 
-            }, modifier = Modifier.padding(all = 0.dp)
+                }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         HorizontalDivider()
@@ -476,28 +539,28 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Spacer(Modifier.weight(1f))
             Switch(
                 checked = blurChecked, onCheckedChange = {
-                Settings().putBoolean("blurDL", it); blurChecked = it
-            }, thumbContent = {
+                    Settings().putBoolean("blurDL", it); blurChecked = it
+                }, thumbContent = {
 
-                AnimatedContent(blurChecked, transitionSpec = {
-                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
-                }) { checked ->
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+                    AnimatedContent(blurChecked, transitionSpec = {
+                        slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                    }) { checked ->
+                        if (checked) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
                     }
-                }
 
-            }, modifier = Modifier.padding(all = 0.dp)
+                }, modifier = Modifier.padding(all = 0.dp)
             )
         }
         Text(
@@ -518,7 +581,10 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
             Column() {
                 Text(
                     "ech0's birthday in ${
-                        Clock.System.now().daysUntil(Instant.parse("2025-01-26T09:30:00-05:00"), timeZone = TimeZone.currentSystemDefault())
+                        Clock.System.now().daysUntil(
+                            Instant.parse("2025-01-26T09:30:00-05:00"),
+                            timeZone = TimeZone.currentSystemDefault()
+                        )
                     } days", Modifier.padding(start = 8.dp)
                 )
             }
@@ -601,10 +667,13 @@ fun SettingsPage(setColorScheme: (ColorScheme?) -> Unit = {}) {
 
                 ) {
                 Column(
-                    modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
-                        Icons.Filled.NoAdultContent, "Enable adult content?", modifier = Modifier.padding(bottom = 0.dp)
+                        Icons.Filled.NoAdultContent,
+                        "Enable adult content?",
+                        modifier = Modifier.padding(bottom = 0.dp)
                     )
                     Text(
                         "Enable adult content?",
