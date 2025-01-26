@@ -107,7 +107,6 @@ fun SearchPage() {
                 Modifier
                     .focusRequester(focusRequester)
                     .fillMaxWidth()
-                    .imePadding()
             },
             shape = if (topBar) {
                 RoundedCornerShape(25.dp, 25.dp, 25.dp, 25.dp)

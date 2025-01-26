@@ -417,6 +417,7 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
                                         Text(it.key, style = MaterialTheme.typography.bodySmall)
                                     }
                                 }, onClick = {
+                                    Settings().putString("theme", it.key)
                                     setColorScheme(it.key)
                                     dropdownOpen = false
                                 })
