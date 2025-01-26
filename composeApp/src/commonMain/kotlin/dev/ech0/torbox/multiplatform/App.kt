@@ -48,8 +48,7 @@ fun App() {
             Scaffold(
                 topBar = { TopBar() },
                 bottomBar = { NavBar(navController) },
-                snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-                modifier = Modifier.imePadding()
+                snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
             ) { paddingValues ->
                 Navigation(navController, paddingValues, { colorScheme = it }, { darkMode = it })
                 tmdbApi = TMDBApi()

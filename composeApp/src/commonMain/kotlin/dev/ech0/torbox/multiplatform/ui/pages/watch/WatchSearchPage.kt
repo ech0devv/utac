@@ -114,7 +114,7 @@ fun WatchSearchPage() {
                         }, modifier = if (topBar) {
                             Modifier.focusRequester(focusRequester).fillMaxWidth().padding(horizontal = 10.dp)
                         } else {
-                            Modifier.focusRequester(focusRequester).fillMaxWidth().imePadding().padding(top = 0.dp)
+                            Modifier.focusRequester(focusRequester).fillMaxWidth().padding(top = 0.dp, bottom = 0.dp)
                         }, shape = if (topBar) {
                             RoundedCornerShape(25.dp, 25.dp, 25.dp, 25.dp)
                         } else {
