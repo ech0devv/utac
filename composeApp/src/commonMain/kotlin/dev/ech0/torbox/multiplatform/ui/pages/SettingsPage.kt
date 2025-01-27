@@ -551,26 +551,6 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(start = 16.dp, top = 8.dp)
         )
-        Row(
-            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Outlined.Celebration,
-                "ech0's birthday in ... days",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Column() {
-                Text(
-                    "ech0's birthday in ${
-                        Clock.System.now().daysUntil(
-                            Instant.parse("2025-01-26T09:30:00-05:00"),
-                            timeZone = TimeZone.currentSystemDefault()
-                        )
-                    } days", Modifier.padding(start = 8.dp)
-                )
-            }
-        }
         HorizontalDivider()
         Row(
             modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
