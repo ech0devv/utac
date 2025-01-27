@@ -13,7 +13,7 @@ val traktKey: String = properties.getProperty("TRAKT_KEY")
 val traktSecret: String = properties.getProperty("TRAKT_SECRET")
 
 // https://stackoverflow.com/a/74771876
-
+// hi
 val buildConfigGenerator by tasks.registering(Sync::class){
     from(
         resources.text.fromString("""
@@ -33,7 +33,6 @@ val buildConfigGenerator by tasks.registering(Sync::class){
     into(layout.buildDirectory.dir("generated/source/kotlin"))
 
 }
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
@@ -54,7 +53,6 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
     listOf(
         iosX64(),
         iosArm64(),
@@ -66,7 +64,7 @@ kotlin {
         }
     }
     
-    jvm("desktop")
+    jvm("desktop"){}
     sourceSets {
         val desktopMain by getting
         val commonMain by getting {
@@ -133,6 +131,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    lint {
+        baseline = file("lint-baseline.xml")
     }
 }
 
