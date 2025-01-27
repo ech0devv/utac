@@ -18,13 +18,14 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.api.torboxAPI
+import dev.ech0.torbox.multiplatform.getPlatform
 import io.ktor.http.*
 import kotlinx.coroutines.launch
 
 @Composable
 fun ApiPrompt(dismiss: () -> Unit, navController: NavController) {
     var apiKeySet by remember { mutableStateOf("") }
-    var showApikey by remember { mutableStateOf(false) }
+    var showApikey by remember { mutableStateOf(if(getPlatform().name == "iOS") true else false) }
     var shouldLoad by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     Dialog(onDismissRequest = dismiss) {
@@ -59,13 +60,15 @@ fun ApiPrompt(dismiss: () -> Unit, navController: NavController) {
 
                     },
                     trailingIcon = {
-                        IconButton(content = {
-                            if (showApikey) {
-                                Icon(Icons.Filled.VisibilityOff, null)
-                            } else {
-                                Icon(Icons.Filled.Visibility, null)
-                            }
-                        }, onClick = { showApikey = !showApikey })
+                        if(getPlatform().name != "iOS"){
+                            IconButton(content = {
+                                if (showApikey) {
+                                    Icon(Icons.Filled.VisibilityOff, null)
+                                } else {
+                                    Icon(Icons.Filled.Visibility, null)
+                                }
+                            }, onClick = { showApikey = !showApikey })
+                        }
                     })
                 Text(
                     "Your API Key will be stored locally and sent only to Torbox servers, nowhere else.",

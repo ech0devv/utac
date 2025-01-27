@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
@@ -67,15 +68,16 @@ fun DownloadItem(
                     Modifier
                 }
             )
-            Text(
-                text = "${download.downloadState}, ↓${
-                    formatFileSize(download.downloadSpeed.toLong())
-                }/s${
-                    if (download.seeds != null) ", ↑${
-                        formatFileSize(download.uploadSpeed.toLong())
-                    }/s" else ""
-                }", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                Text(
+                    text = "${download.downloadState.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}, ↓${
+                        formatFileSize(download.downloadSpeed.toLong())
+                    }/s${
+                        if (download.seeds != null) ", ↑${
+                            formatFileSize(download.uploadSpeed.toLong())
+                        }/s" else ""
+                    }", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
         }
         fun handleClick(action: String) {
             expanded = false

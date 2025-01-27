@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -278,7 +279,12 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                             }
                                         }) {
                                         Column {
-                                            Text(torrent.raw_title)
+                                            Text(torrent.raw_title,
+                                                modifier = if (Settings().getBoolean("blurDL", false)) {
+                                                    Modifier.clip(RoundedCornerShape(6.dp)).blur(10.dp)
+                                                } else {
+                                                    Modifier
+                                                })
 
                                             FlowRow {
                                                 for (key in torrent.title_parsed_data.keys) {

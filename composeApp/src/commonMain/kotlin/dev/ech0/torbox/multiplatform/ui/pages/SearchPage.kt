@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.LocalNavController
+import dev.ech0.torbox.multiplatform.LocalSnackbarHostState
 import dev.ech0.torbox.multiplatform.api.torboxAPI
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
 import io.ktor.http.*
@@ -49,6 +50,7 @@ fun SearchPage() {
     var shouldLoad by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val topBar = Settings().getBoolean("searchTop", false)
+    val snackbarHostState = LocalSnackbarHostState.current
     LaunchedEffect(true) {
         focusRequester.requestFocus()
     }
@@ -76,17 +78,21 @@ fun SearchPage() {
                         focusManager.clearFocus()
                         scope.launch {
                             try{
-                                shouldLoad = true
-                                torboxAPI
-                                var data =
-                                    torboxAPI.searchTorrents(textFieldState)["data"]!!.jsonObject["torrents"]!!.jsonArray
-                                results = List(data.size) { index -> data[index].jsonObject}
-                                if(Settings().getInt("plan", 4) == 2 && Settings().getBoolean("usenet", true)){
-                                    data = torboxAPI.searchUsenet(textFieldState)["data"]!!.jsonObject["nzbs"]!!.jsonArray
-                                    results = results.plus(List(data.size) { index -> data[index].jsonObject })
-                                    results = results.shuffled()
+                                if(textFieldState != ""){
+                                    shouldLoad = true
+                                    torboxAPI
+                                    var data =
+                                        torboxAPI.searchTorrents(textFieldState)["data"]!!.jsonObject["torrents"]!!.jsonArray
+                                    results = List(data.size) { index -> data[index].jsonObject}
+                                    if(Settings().getInt("plan", 4) == 2 && Settings().getBoolean("usenet", true)){
+                                        data = torboxAPI.searchUsenet(textFieldState)["data"]!!.jsonObject["nzbs"]!!.jsonArray
+                                        results = results.plus(List(data.size) { index -> data[index].jsonObject })
+                                        results = results.shuffled()
+                                    }
+                                    shouldLoad = false
+                                }else{
+                                    snackbarHostState.showSnackbar("Search for something, you goober.")
                                 }
-                                shouldLoad = false
                             }catch(e: Exception){
                                 navController.navigate("Error/${e.toString().encodeURLPath()}")
                             }

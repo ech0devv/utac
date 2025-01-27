@@ -21,7 +21,7 @@ import io.ktor.http.*
 @Composable
 fun TopBar() {
     TopAppBar(
-        title = { Text("Torbox") },
+        title = { Text("TorBox") },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.surface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,

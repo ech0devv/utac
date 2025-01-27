@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.torboxAPI
+import dev.ech0.torbox.multiplatform.ui.components.DisplayError
 import dev.ech0.torbox.multiplatform.ui.components.Download
 import dev.ech0.torbox.multiplatform.ui.components.DownloadItem
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
@@ -57,7 +58,7 @@ fun DownloadsPage(magnet: String = "") {
     var magnetPrompt by remember { mutableStateOf(false) }
     var magnetText by remember { mutableStateOf("") }
     var selectedUri by remember { mutableStateOf("") }
-    var currentFilter by remember { mutableStateOf(0) }
+    var currentFilter by remember { mutableStateOf(1) }
     var openInPrompted by remember { mutableStateOf(false) }
     /*TODO: val torrentLoader = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
         try {
@@ -125,10 +126,11 @@ fun DownloadsPage(magnet: String = "") {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
                     .horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically
             ) {
-                FilterChip(currentFilter == 0, label = {
-                    Text("Alphabetical")
-                }, onClick = { currentFilter = 0 }, leadingIcon = {
-                    Crossfade(targetState = currentFilter == 0) { state ->
+
+                FilterChip(currentFilter == 1, label = {
+                    Text("Time Created")
+                }, onClick = { currentFilter = 1 }, leadingIcon = {
+                    Crossfade(targetState = currentFilter == 1) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
                         } else {
@@ -136,10 +138,10 @@ fun DownloadsPage(magnet: String = "") {
                         }
                     }
                 }, modifier = Modifier.padding(horizontal = 4.dp))
-                FilterChip(currentFilter == 1, label = {
-                    Text("Time Created")
-                }, onClick = { currentFilter = 1 }, leadingIcon = {
-                    Crossfade(targetState = currentFilter == 1) { state ->
+                FilterChip(currentFilter == 0, label = {
+                    Text("Alphabetical")
+                }, onClick = { currentFilter = 0 }, leadingIcon = {
+                    Crossfade(targetState = currentFilter == 0) { state ->
                         if (state) {
                             Icon(Icons.Filled.Check, "Checked")
                         } else {
@@ -152,7 +154,7 @@ fun DownloadsPage(magnet: String = "") {
                 )
             }
             if (error) {
-                //DisplayError(recoverable = true)
+                DisplayError(recoverable = true)
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(bottom = 8.dp, top = 8.dp)
@@ -180,7 +182,7 @@ fun DownloadsPage(magnet: String = "") {
                             downloadSpeed = download["download_speed"]?.jsonPrimitive?.double ?: 0.0,
                             uploadSpeed = download["upload_speed"]?.jsonPrimitive?.double ?: 0.0,
                             progress = download["progress"]?.jsonPrimitive?.double ?: 0.0,
-                            seeds = download["seeds"]?.jsonPrimitive?.intOrNull ?: 0,
+                            seeds = download["seeds"]?.jsonPrimitive?.intOrNull,
                             files = listOf()
                         ), setLoadingScreen = { shouldLoad = it }, setRefresh = { isRefreshing = it }, navController
                         )
