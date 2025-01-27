@@ -56,7 +56,7 @@ class Trakt {
     suspend fun getAuthCode(): JsonObject {
         throttle()
         val response = ktor.post(base + "oauth/device/code") {
-            setBody(JsonObject(mapOf(Pair("client_id", JsonPrimitive(BuildConfig.TRAKT_KEY)))).toString())
+            setBody(JsonObject(mapOf(Pair("client_id", JsonPrimitive(BuildConfig.TRAKT_KEY)))))
             headers {
                 append(HttpHeaders.ContentType, "application/json")
             }
@@ -107,7 +107,7 @@ class Trakt {
                                 Pair("redirect_uri", JsonPrimitive("urn:ietf:wg:oauth:2.0:oob")),
                                 Pair("grant_type", JsonPrimitive("refresh_token"))
                             )
-                        )
+                        ).toString()
                     )
                     headers {
                         append(HttpHeaders.ContentType, "application/json")
@@ -229,7 +229,7 @@ class Trakt {
                         ]
                     }
                 """.trimIndent()
-                    ).jsonPrimitive.content
+                    ).jsonObject.toString()
                 )
             }
             val json = Json.parseToJsonElement(response.bodyAsText()).jsonObject
