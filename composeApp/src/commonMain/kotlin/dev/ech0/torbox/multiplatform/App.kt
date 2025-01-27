@@ -1,6 +1,9 @@
 package dev.ech0.torbox.multiplatform
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -42,20 +45,22 @@ fun App() {
         var showContent by remember { mutableStateOf(false) }
         val navController = rememberNavController()
         val snackbarHostState = remember { SnackbarHostState() }
-        CompositionLocalProvider(
-            LocalNavController provides navController, LocalSnackbarHostState provides snackbarHostState
-        ) {
-            Scaffold(
-                topBar = { TopBar() },
-                bottomBar = { NavBar(navController) },
-                snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-            ) { paddingValues ->
-                Navigation(navController, paddingValues, { colorScheme = it }, { darkMode = it })
-                tmdbApi = TMDBApi()
-                torboxAPI = TorboxAPI(Settings().getString("apiKey", "__"), navController)
-                traktApi = Trakt()
-            }
+        Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
+            CompositionLocalProvider(
+                LocalNavController provides navController, LocalSnackbarHostState provides snackbarHostState
+            ) {
+                Scaffold(
+                    topBar = { TopBar() },
+                    bottomBar = { NavBar(navController) },
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+                ) { paddingValues ->
+                    Navigation(navController, paddingValues, { colorScheme = it }, { darkMode = it })
+                    tmdbApi = TMDBApi()
+                    torboxAPI = TorboxAPI(Settings().getString("apiKey", "__"), navController)
+                    traktApi = Trakt()
+                }
 
+            }
         }
     }
 }
