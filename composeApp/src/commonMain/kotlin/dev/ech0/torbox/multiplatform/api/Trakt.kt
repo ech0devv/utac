@@ -2,17 +2,30 @@ package dev.ech0.torbox.multiplatform.api
 
 import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.BuildConfig
-import io.ktor.client.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import kotlinx.coroutines.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.io.IOException
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 lateinit var traktApi: Trakt
 
@@ -42,7 +55,10 @@ class Trakt {
                         traktApi = Trakt()
                     } else {
                         token = it["access_token"]!!.jsonPrimitive.content
-                        Settings().putString("traktToken", it["refresh_token"]!!.jsonPrimitive.content)
+                        Settings().putString(
+                            "traktToken",
+                            it["refresh_token"]!!.jsonPrimitive.content
+                        )
                         loggedIn = true
                     }
                 }
@@ -56,7 +72,16 @@ class Trakt {
     suspend fun getAuthCode(): JsonObject {
         throttle()
         val response = ktor.post(base + "oauth/device/code") {
-            setBody(JsonObject(mapOf(Pair("client_id", JsonPrimitive(BuildConfig.TRAKT_KEY)))))
+            setBody(
+                JsonObject(
+                    mapOf(
+                        Pair(
+                            "client_id",
+                            JsonPrimitive(BuildConfig.TRAKT_KEY)
+                        )
+                    )
+                ).toString()
+            )
             headers {
                 append(HttpHeaders.ContentType, "application/json")
             }
@@ -197,7 +222,6 @@ class Trakt {
 
     suspend fun removeShow(id: Long, season: Int, episode: Int) {
         if (loggedIn) {
-
             throttle()
             val response = ktor.post(base + "sync/history/remove") {
                 headers {
@@ -238,7 +262,6 @@ class Trakt {
 
     suspend fun removeMovie(id: Long) {
         if (loggedIn) {
-
             throttle()
             val response = ktor.post(base + "sync/history/remove") {
                 headers {
