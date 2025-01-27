@@ -381,24 +381,25 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
         )
 
         Row(
-            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                Icons.Outlined.Colorize,
-                "Enable AMOLED Theme",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Column() {
-                Text("Pick theme")
-                Text(
-                    "Make UTAC look all pretty :3",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.width(250.dp)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Outlined.Colorize,
+                    "Enable AMOLED Theme",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 8.dp)
                 )
+                Column() {
+                    Text("Pick theme")
+                    Text(
+                        "Make UTAC look all pretty :3",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.width(250.dp)
+                    )
+                }
             }
-            Spacer(Modifier.weight(1f))
             Box {
                 Button(onClick = {dropdownOpen = true}){
                     Text("Pick")
