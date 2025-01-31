@@ -82,6 +82,7 @@ fun DownloadItem(
         fun handleClick(action: String) {
             expanded = false
             scope.launch {
+                setLoadingScreen(true)
                 try {
                     if (download.seeds != null) {
                         torboxAPI.controlTorrent(download.id, action)

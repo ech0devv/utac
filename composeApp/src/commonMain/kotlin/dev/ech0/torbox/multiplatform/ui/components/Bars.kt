@@ -16,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.russhwolf.settings.Settings
 import dev.ech0.torbox.multiplatform.*
 import io.ktor.http.*
 
@@ -57,6 +58,9 @@ fun NavBar(
         }
     }
     Column {
+        if(Settings().getString("theme", "").startsWith("AMOLED")){
+            HorizontalDivider()
+        }
         NavigationBar {
             items.forEachIndexed { index, item ->
                 NavigationBarItem(

@@ -4,7 +4,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -15,9 +20,27 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -30,13 +53,20 @@ import dev.ech0.torbox.multiplatform.ui.components.DisplayError
 import dev.ech0.torbox.multiplatform.ui.components.Download
 import dev.ech0.torbox.multiplatform.ui.components.DownloadItem
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
-import io.ktor.http.*
+import io.ktor.http.encodeURLPath
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.buildJsonArray
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 
 @OptIn(
@@ -59,8 +89,7 @@ fun DownloadsPage(magnet: String = "") {
     var magnetText by remember { mutableStateOf("") }
     var selectedUri by remember { mutableStateOf("") }
     var currentFilter by remember { mutableStateOf(1) }
-    var openInPrompted by remember { mutableStateOf(false) }
-    /*TODO: val torrentLoader = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
+    var openInPrompted by remember { mutableStateOf(false) }/*TODO: val torrentLoader = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { result ->
         try {
             val item = context.contentResolver.openInputStream(result!!)
             val bytes = item!!.readBytes()
@@ -80,28 +109,26 @@ fun DownloadsPage(magnet: String = "") {
 
         }
     }*/
-    LaunchedEffect(isRefreshing) {
-        scope.launch {
-            while (true) {
-                val startTime = Clock.System.now().toEpochMilliseconds()
-                while (!isRefreshing && Clock.System.now().toEpochMilliseconds() - startTime < 1000) {
-                    delay(50L)
+    LaunchedEffect(Unit) {
+        while (true) {
+            val startTime = Clock.System.now().toEpochMilliseconds()
+            while (!isRefreshing && Clock.System.now().toEpochMilliseconds() - startTime < 1000) {
+                delay(50L)
+            }
+            try {
+                val data_torrents = torboxAPI.getListOfTorrents()["data"]!!.jsonArray
+                val data_usenet = torboxAPI.getListOfUsenet()["data"]!!.jsonArray
+                val data = buildJsonArray {
+                    addAll(data_torrents)
+                    addAll(data_usenet)
                 }
-                try {
-                    val data_torrents = torboxAPI.getListOfTorrents()["data"]!!.jsonArray
-                    val data_usenet = torboxAPI.getListOfUsenet()["data"]!!.jsonArray
-                    val data = buildJsonArray {
-                        addAll(data_torrents)
-                        addAll(data_usenet)
-                    }
-                    downloads = data.map { it.jsonObject }
-                    error = false
+                downloads = data.map { it.jsonObject }
+                error = false
+                isRefreshing = false
+            } catch (e: Exception) {
+                if (isRefreshing) {
                     isRefreshing = false
-                } catch (e: Exception) {
-                    if (isRefreshing) {
-                        isRefreshing = false
-                        error = true
-                    }
+                    error = true
                 }
             }
         }/*if(magnet != "" && !openInPrompted){
@@ -115,16 +142,17 @@ fun DownloadsPage(magnet: String = "") {
     PullToRefreshBox(
         isRefreshing = isRefreshing, onRefresh = {
             isRefreshing = true
-        }, modifier = if(shouldLoad){
+        }, modifier = if (shouldLoad) {
             Modifier.blur(25.dp)
-        }else{
+        } else {
             Modifier
         }
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)
-                    .horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically
+                    .horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 FilterChip(currentFilter == 1, label = {
@@ -159,32 +187,38 @@ fun DownloadsPage(magnet: String = "") {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(bottom = 8.dp, top = 8.dp)
                 ) {
-                    items(
-                        when (currentFilter) {
+                    items(when (currentFilter) {
                         0 -> {
                             downloads.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it["name"]!!.jsonPrimitive.content })
                         }
+
                         1 -> {
                             downloads.sortedByDescending {
-                                Instant.parse(it["created_at"]!!.jsonPrimitive.content).toEpochMilliseconds()
+                                Instant.parse(it["created_at"]!!.jsonPrimitive.content)
+                                    .toEpochMilliseconds()
                             }
                         }
+
                         else -> {
                             downloads
                         }
                     }) { download ->
-                        DownloadItem(
-                            download = Download(
+                        DownloadItem(download = Download(
                             id = download["id"]?.jsonPrimitive?.intOrNull ?: 0,
                             name = download["name"]?.jsonPrimitive?.content ?: "Unknown",
                             cached = download["cached"]?.jsonPrimitive?.boolean ?: false,
-                            downloadState = download["download_state"]?.jsonPrimitive?.content ?: "",
-                            downloadSpeed = download["download_speed"]?.jsonPrimitive?.double ?: 0.0,
+                            downloadState = download["download_state"]?.jsonPrimitive?.content
+                                ?: "",
+                            downloadSpeed = download["download_speed"]?.jsonPrimitive?.double
+                                ?: 0.0,
                             uploadSpeed = download["upload_speed"]?.jsonPrimitive?.double ?: 0.0,
                             progress = download["progress"]?.jsonPrimitive?.double ?: 0.0,
                             seeds = download["seeds"]?.jsonPrimitive?.intOrNull,
                             files = listOf()
-                        ), setLoadingScreen = { shouldLoad = it }, setRefresh = { isRefreshing = it }, navController
+                        ),
+                            setLoadingScreen = { shouldLoad = it },
+                            setRefresh = { isRefreshing = it },
+                            navController
                         )
                     }
 
@@ -192,7 +226,8 @@ fun DownloadsPage(magnet: String = "") {
             }
         }
         FloatingActionButton(
-            onClick = { expandedFab = true }, modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
+            onClick = { expandedFab = true },
+            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp)
         ) {
             Icon(Icons.Filled.Add, "Add")
             DropdownMenu(expanded = expandedFab, onDismissRequest = { expandedFab = false }) {
@@ -235,7 +270,9 @@ fun DownloadsPage(magnet: String = "") {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
-                            Icons.Filled.Link, "Input Magnet URI", modifier = Modifier.padding(bottom = 0.dp)
+                            Icons.Filled.Link,
+                            "Input Magnet URI",
+                            modifier = Modifier.padding(bottom = 0.dp)
                         )
                         Text(
                             "Input magnet uri",

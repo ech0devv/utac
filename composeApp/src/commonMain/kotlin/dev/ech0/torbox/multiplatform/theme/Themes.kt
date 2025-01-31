@@ -10,8 +10,8 @@ import androidx.compose.ui.text.font.FontFamily
 import dev.ech0.torbox.multiplatform.api.base
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.FontResource
-import utac.composeapp.generated.resources.Doto
 import utac.composeapp.generated.resources.Res
+import utac.composeapp.generated.resources.Doto
 
 interface Scheme {
     val primaryLight: Color
@@ -49,78 +49,6 @@ interface Scheme {
     val surfaceContainerLight: Color
     val surfaceContainerHighLight: Color
     val surfaceContainerHighestLight: Color
-
-    val primaryLightMediumContrast: Color
-    val onPrimaryLightMediumContrast: Color
-    val primaryContainerLightMediumContrast: Color
-    val onPrimaryContainerLightMediumContrast: Color
-    val secondaryLightMediumContrast: Color
-    val onSecondaryLightMediumContrast: Color
-    val secondaryContainerLightMediumContrast: Color
-    val onSecondaryContainerLightMediumContrast: Color
-    val tertiaryLightMediumContrast: Color
-    val onTertiaryLightMediumContrast: Color
-    val tertiaryContainerLightMediumContrast: Color
-    val onTertiaryContainerLightMediumContrast: Color
-    val errorLightMediumContrast: Color
-    val onErrorLightMediumContrast: Color
-    val errorContainerLightMediumContrast: Color
-    val onErrorContainerLightMediumContrast: Color
-    val backgroundLightMediumContrast: Color
-    val onBackgroundLightMediumContrast: Color
-    val surfaceLightMediumContrast: Color
-    val onSurfaceLightMediumContrast: Color
-    val surfaceVariantLightMediumContrast: Color
-    val onSurfaceVariantLightMediumContrast: Color
-    val outlineLightMediumContrast: Color
-    val outlineVariantLightMediumContrast: Color
-    val scrimLightMediumContrast: Color
-    val inverseSurfaceLightMediumContrast: Color
-    val inverseOnSurfaceLightMediumContrast: Color
-    val inversePrimaryLightMediumContrast: Color
-    val surfaceDimLightMediumContrast: Color
-    val surfaceBrightLightMediumContrast: Color
-    val surfaceContainerLowestLightMediumContrast: Color
-    val surfaceContainerLowLightMediumContrast: Color
-    val surfaceContainerLightMediumContrast: Color
-    val surfaceContainerHighLightMediumContrast: Color
-    val surfaceContainerHighestLightMediumContrast: Color
-
-    val primaryLightHighContrast: Color
-    val onPrimaryLightHighContrast: Color
-    val primaryContainerLightHighContrast: Color
-    val onPrimaryContainerLightHighContrast: Color
-    val secondaryLightHighContrast: Color
-    val onSecondaryLightHighContrast: Color
-    val secondaryContainerLightHighContrast: Color
-    val onSecondaryContainerLightHighContrast: Color
-    val tertiaryLightHighContrast: Color
-    val onTertiaryLightHighContrast: Color
-    val tertiaryContainerLightHighContrast: Color
-    val onTertiaryContainerLightHighContrast: Color
-    val errorLightHighContrast: Color
-    val onErrorLightHighContrast: Color
-    val errorContainerLightHighContrast: Color
-    val onErrorContainerLightHighContrast: Color
-    val backgroundLightHighContrast: Color
-    val onBackgroundLightHighContrast: Color
-    val surfaceLightHighContrast: Color
-    val onSurfaceLightHighContrast: Color
-    val surfaceVariantLightHighContrast: Color
-    val onSurfaceVariantLightHighContrast: Color
-    val outlineLightHighContrast: Color
-    val outlineVariantLightHighContrast: Color
-    val scrimLightHighContrast: Color
-    val inverseSurfaceLightHighContrast: Color
-    val inverseOnSurfaceLightHighContrast: Color
-    val inversePrimaryLightHighContrast: Color
-    val surfaceDimLightHighContrast: Color
-    val surfaceBrightLightHighContrast: Color
-    val surfaceContainerLowestLightHighContrast: Color
-    val surfaceContainerLowLightHighContrast: Color
-    val surfaceContainerLightHighContrast: Color
-    val surfaceContainerHighLightHighContrast: Color
-    val surfaceContainerHighestLightHighContrast: Color
 
     val primaryDark: Color
     val onPrimaryDark: Color
@@ -198,78 +126,6 @@ object Torbox : Scheme {
     override val surfaceContainerHighLight = Color(0xFFE6E9E1)
     override val surfaceContainerHighestLight = Color(0xFFE0E4DB)
 
-    override val primaryLightMediumContrast = Color(0xFF0D3F17)
-    override val onPrimaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val primaryContainerLightMediumContrast = Color(0xFF477849)
-    override val onPrimaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val secondaryLightMediumContrast = Color(0xFF2A3A29)
-    override val onSecondaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val secondaryContainerLightMediumContrast = Color(0xFF60725E)
-    override val onSecondaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val tertiaryLightMediumContrast = Color(0xFF083C42)
-    override val onTertiaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val tertiaryContainerLightMediumContrast = Color(0xFF48747A)
-    override val onTertiaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val errorLightMediumContrast = Color(0xFF740006)
-    override val onErrorLightMediumContrast = Color(0xFFFFFFFF)
-    override val errorContainerLightMediumContrast = Color(0xFFCF2C27)
-    override val onErrorContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val backgroundLightMediumContrast = Color(0xFFF7FBF2)
-    override val onBackgroundLightMediumContrast = Color(0xFF181D17)
-    override val surfaceLightMediumContrast = Color(0xFFF7FBF2)
-    override val onSurfaceLightMediumContrast = Color(0xFF0E120D)
-    override val surfaceVariantLightMediumContrast = Color(0xFFDEE5D9)
-    override val onSurfaceVariantLightMediumContrast = Color(0xFF313830)
-    override val outlineLightMediumContrast = Color(0xFF4E544B)
-    override val outlineVariantLightMediumContrast = Color(0xFF686F65)
-    override val scrimLightMediumContrast = Color(0xFF000000)
-    override val inverseSurfaceLightMediumContrast = Color(0xFF2D322C)
-    override val inverseOnSurfaceLightMediumContrast = Color(0xFFEEF2E9)
-    override val inversePrimaryLightMediumContrast = Color(0xFF9FD49C)
-    override val surfaceDimLightMediumContrast = Color(0xFFC4C8BF)
-    override val surfaceBrightLightMediumContrast = Color(0xFFF7FBF2)
-    override val surfaceContainerLowestLightMediumContrast = Color(0xFFFFFFFF)
-    override val surfaceContainerLowLightMediumContrast = Color(0xFFF1F5EC)
-    override val surfaceContainerLightMediumContrast = Color(0xFFE6E9E1)
-    override val surfaceContainerHighLightMediumContrast = Color(0xFFDADED5)
-    override val surfaceContainerHighestLightMediumContrast = Color(0xFFCFD3CA)
-
-    override val primaryLightHighContrast = Color(0xFF00340D)
-    override val onPrimaryLightHighContrast = Color(0xFFFFFFFF)
-    override val primaryContainerLightHighContrast = Color(0xFF235328)
-    override val onPrimaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val secondaryLightHighContrast = Color(0xFF203020)
-    override val onSecondaryLightHighContrast = Color(0xFFFFFFFF)
-    override val secondaryContainerLightHighContrast = Color(0xFF3D4D3B)
-    override val onSecondaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val tertiaryLightHighContrast = Color(0xFF003237)
-    override val onTertiaryLightHighContrast = Color(0xFFFFFFFF)
-    override val tertiaryContainerLightHighContrast = Color(0xFF225056)
-    override val onTertiaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val errorLightHighContrast = Color(0xFF600004)
-    override val onErrorLightHighContrast = Color(0xFFFFFFFF)
-    override val errorContainerLightHighContrast = Color(0xFF98000A)
-    override val onErrorContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val backgroundLightHighContrast = Color(0xFFF7FBF2)
-    override val onBackgroundLightHighContrast = Color(0xFF181D17)
-    override val surfaceLightHighContrast = Color(0xFFF7FBF2)
-    override val onSurfaceLightHighContrast = Color(0xFF000000)
-    override val surfaceVariantLightHighContrast = Color(0xFFDEE5D9)
-    override val onSurfaceVariantLightHighContrast = Color(0xFF000000)
-    override val outlineLightHighContrast = Color(0xFF272E26)
-    override val outlineVariantLightHighContrast = Color(0xFF444B42)
-    override val scrimLightHighContrast = Color(0xFF000000)
-    override val inverseSurfaceLightHighContrast = Color(0xFF2D322C)
-    override val inverseOnSurfaceLightHighContrast = Color(0xFFFFFFFF)
-    override val inversePrimaryLightHighContrast = Color(0xFF9FD49C)
-    override val surfaceDimLightHighContrast = Color(0xFFB6BAB2)
-    override val surfaceBrightLightHighContrast = Color(0xFFF7FBF2)
-    override val surfaceContainerLowestLightHighContrast = Color(0xFFFFFFFF)
-    override val surfaceContainerLowLightHighContrast = Color(0xFFEEF2E9)
-    override val surfaceContainerLightHighContrast = Color(0xFFE0E4DB)
-    override val surfaceContainerHighLightHighContrast = Color(0xFFD2D6CD)
-    override val surfaceContainerHighestLightHighContrast = Color(0xFFC4C8BF)
-
     override val primaryDark = Color(0xFF9FD49C)
     override val onPrimaryDark = Color(0xFF053911)
     override val primaryContainerDark = Color(0xFF205026)
@@ -306,6 +162,81 @@ object Torbox : Scheme {
     override val surfaceContainerHighDark = Color(0xFF272B26)
     override val surfaceContainerHighestDark = Color(0xFF313630)
     override val displayFontFamily = Res.font.Doto
+    override val bodyFontFamily = null
+}
+object AMOLED : Scheme {
+    override val primaryLight = Color(0xFF39693B)
+    override val onPrimaryLight = Color(0xFFFFFFFF)
+    override val primaryContainerLight = Color(0xFFBAF0B7)
+    override val onPrimaryContainerLight = Color(0xFF205026)
+    override val secondaryLight = Color(0xFF526350)
+    override val onSecondaryLight = Color(0xFFFFFFFF)
+    override val secondaryContainerLight = Color(0xFFD5E8D0)
+    override val onSecondaryContainerLight = Color(0xFF3A4B39)
+    override val tertiaryLight = Color(0xFF39656B)
+    override val onTertiaryLight = Color(0xFFFFFFFF)
+    override val tertiaryContainerLight = Color(0xFFBCEBF2)
+    override val onTertiaryContainerLight = Color(0xFF1F4D53)
+    override val errorLight = Color(0xFFBA1A1A)
+    override val onErrorLight = Color(0xFFFFFFFF)
+    override val errorContainerLight = Color(0xFFFFDAD6)
+    override val onErrorContainerLight = Color(0xFF93000A)
+    override val backgroundLight = Color(0xFFF7FBF2)
+    override val onBackgroundLight = Color(0xFF181D17)
+    override val surfaceLight = Color(0xFFF7FBF2)
+    override val onSurfaceLight = Color(0xFF181D17)
+    override val surfaceVariantLight = Color(0xFFDEE5D9)
+    override val onSurfaceVariantLight = Color(0xFF424940)
+    override val outlineLight = Color(0xFF72796F)
+    override val outlineVariantLight = Color(0xFFC2C9BD)
+    override val scrimLight = Color(0xFF000000)
+    override val inverseSurfaceLight = Color(0xFF2D322C)
+    override val inverseOnSurfaceLight = Color(0xFFEEF2E9)
+    override val inversePrimaryLight = Color(0xFF9FD49C)
+    override val surfaceDimLight = Color(0xFFD7DBD3)
+    override val surfaceBrightLight = Color(0xFFF7FBF2)
+    override val surfaceContainerLowestLight = Color(0xFFFFFFFF)
+    override val surfaceContainerLowLight = Color(0xFFF1F5EC)
+    override val surfaceContainerLight = Color(0xFFEBEFE6)
+    override val surfaceContainerHighLight = Color(0xFFE6E9E1)
+    override val surfaceContainerHighestLight = Color(0xFFE0E4DB)
+
+    override val primaryDark = Color(0xFF9FD49C)
+    override val onPrimaryDark = Color(0xFF053911)
+    override val primaryContainerDark = Color(0xFF000000)
+    override val onPrimaryContainerDark = Color(0xFFBAF0B7)
+    override val secondaryDark = Color(0xFFB9CCB4)
+    override val onSecondaryDark = Color(0xFF243424)
+    override val secondaryContainerDark = Color(0xFF000000)
+    override val onSecondaryContainerDark = Color(0xFFD5E8D0)
+    override val tertiaryDark = Color(0xFFA1CED5)
+    override val onTertiaryDark = Color(0xFF00363C)
+    override val tertiaryContainerDark = Color(0xFF1F4D53)
+    override val onTertiaryContainerDark = Color(0xFFBCEBF2)
+    override val errorDark = Color(0xFFFFB4AB)
+    override val onErrorDark = Color(0xFF690005)
+    override val errorContainerDark = Color(0xFF93000A)
+    override val onErrorContainerDark = Color(0xFFFFDAD6)
+    override val backgroundDark = Color(0xFF000000)
+    override val onBackgroundDark = Color(0xFFE0E4DB)
+    override val surfaceDark = Color(0xFF000000)
+    override val onSurfaceDark = Color(0xFFE0E4DB)
+    override val surfaceVariantDark = Color(0xFF424940)
+    override val onSurfaceVariantDark = Color(0xFFC2C9BD)
+    override val outlineDark = Color(0xFF8C9388)
+    override val outlineVariantDark = Color(0xFF424940)
+    override val scrimDark = Color(0xFF000000)
+    override val inverseSurfaceDark = Color(0xFFE0E4DB)
+    override val inverseOnSurfaceDark = Color(0xFF2D322C)
+    override val inversePrimaryDark = Color(0xFF39693B)
+    override val surfaceDimDark = Color(0xFF101410)
+    override val surfaceBrightDark = Color(0xFF363A34)
+    override val surfaceContainerLowestDark = Color(0xFF0B0F0A)
+    override val surfaceContainerLowDark = Color(0xFF181D17)
+    override val surfaceContainerDark = Color(0xFF000000)
+    override val surfaceContainerHighDark = Color(0xFF000000)
+    override val surfaceContainerHighestDark = Color(0xFF313630)
+    override val displayFontFamily = null
     override val bodyFontFamily = null
 }
 object CherryBlossom: Scheme {
@@ -345,78 +276,6 @@ object CherryBlossom: Scheme {
     override val surfaceContainerHighLight = Color(0xFFF5E4E6)
     override val surfaceContainerHighestLight = Color(0xFFEFDFE1)
 
-    override val primaryLightMediumContrast = Color(0xFF5C2235)
-    override val onPrimaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val primaryContainerLightMediumContrast = Color(0xFF9E586C)
-    override val onPrimaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val secondaryLightMediumContrast = Color(0xFF492F35)
-    override val onSecondaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val secondaryContainerLightMediumContrast = Color(0xFF84656C)
-    override val onSecondaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val tertiaryLightMediumContrast = Color(0xFF532D00)
-    override val onTertiaryLightMediumContrast = Color(0xFFFFFFFF)
-    override val tertiaryContainerLightMediumContrast = Color(0xFF976127)
-    override val onTertiaryContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val errorLightMediumContrast = Color(0xFF740006)
-    override val onErrorLightMediumContrast = Color(0xFFFFFFFF)
-    override val errorContainerLightMediumContrast = Color(0xFFCF2C27)
-    override val onErrorContainerLightMediumContrast = Color(0xFFFFFFFF)
-    override val backgroundLightMediumContrast = Color(0xFFFFF8F8)
-    override val onBackgroundLightMediumContrast = Color(0xFF22191B)
-    override val surfaceLightMediumContrast = Color(0xFFFFF8F8)
-    override val onSurfaceLightMediumContrast = Color(0xFF170F11)
-    override val surfaceVariantLightMediumContrast = Color(0xFFF3DDE1)
-    override val onSurfaceVariantLightMediumContrast = Color(0xFF403336)
-    override val outlineLightMediumContrast = Color(0xFF5E4F52)
-    override val outlineVariantLightMediumContrast = Color(0xFF79696C)
-    override val scrimLightMediumContrast = Color(0xFF000000)
-    override val inverseSurfaceLightMediumContrast = Color(0xFF382E30)
-    override val inverseOnSurfaceLightMediumContrast = Color(0xFFFEEDEF)
-    override val inversePrimaryLightMediumContrast = Color(0xFFFFB1C5)
-    override val surfaceDimLightMediumContrast = Color(0xFFD2C3C5)
-    override val surfaceBrightLightMediumContrast = Color(0xFFFFF8F8)
-    override val surfaceContainerLowestLightMediumContrast = Color(0xFFFFFFFF)
-    override val surfaceContainerLowLightMediumContrast = Color(0xFFFFF0F2)
-    override val surfaceContainerLightMediumContrast = Color(0xFFF5E4E6)
-    override val surfaceContainerHighLightMediumContrast = Color(0xFFE9D9DB)
-    override val surfaceContainerHighestLightMediumContrast = Color(0xFFDECED0)
-
-    override val primaryLightHighContrast = Color(0xFF4F182B)
-    override val onPrimaryLightHighContrast = Color(0xFFFFFFFF)
-    override val primaryContainerLightHighContrast = Color(0xFF733548)
-    override val onPrimaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val secondaryLightHighContrast = Color(0xFF3E252C)
-    override val onSecondaryLightHighContrast = Color(0xFFFFFFFF)
-    override val secondaryContainerLightHighContrast = Color(0xFF5E4248)
-    override val onSecondaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val tertiaryLightHighContrast = Color(0xFF452400)
-    override val onTertiaryLightHighContrast = Color(0xFFFFFFFF)
-    override val tertiaryContainerLightHighContrast = Color(0xFF6D3E04)
-    override val onTertiaryContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val errorLightHighContrast = Color(0xFF600004)
-    override val onErrorLightHighContrast = Color(0xFFFFFFFF)
-    override val errorContainerLightHighContrast = Color(0xFF98000A)
-    override val onErrorContainerLightHighContrast = Color(0xFFFFFFFF)
-    override val backgroundLightHighContrast = Color(0xFFFFF8F8)
-    override val onBackgroundLightHighContrast = Color(0xFF22191B)
-    override val surfaceLightHighContrast = Color(0xFFFFF8F8)
-    override val onSurfaceLightHighContrast = Color(0xFF000000)
-    override val surfaceVariantLightHighContrast = Color(0xFFF3DDE1)
-    override val onSurfaceVariantLightHighContrast = Color(0xFF000000)
-    override val outlineLightHighContrast = Color(0xFF35292C)
-    override val outlineVariantLightHighContrast = Color(0xFF544648)
-    override val scrimLightHighContrast = Color(0xFF000000)
-    override val inverseSurfaceLightHighContrast = Color(0xFF382E30)
-    override val inverseOnSurfaceLightHighContrast = Color(0xFFFFFFFF)
-    override val inversePrimaryLightHighContrast = Color(0xFFFFB1C5)
-    override val surfaceDimLightHighContrast = Color(0xFFC4B5B7)
-    override val surfaceBrightLightHighContrast = Color(0xFFFFF8F8)
-    override val surfaceContainerLowestLightHighContrast = Color(0xFFFFFFFF)
-    override val surfaceContainerLowLightHighContrast = Color(0xFFFEEDEF)
-    override val surfaceContainerLightHighContrast = Color(0xFFEFDFE1)
-    override val surfaceContainerHighLightHighContrast = Color(0xFFE1D1D3)
-    override val surfaceContainerHighestLightHighContrast = Color(0xFFD2C3C5)
-
     override val primaryDark = Color(0xFFFFB1C5)
     override val onPrimaryDark = Color(0xFF551D2F)
     override val primaryContainerDark = Color(0xFF703346)
@@ -455,8 +314,83 @@ object CherryBlossom: Scheme {
     override val displayFontFamily = null
     override val bodyFontFamily = null
 }
+object Blues : Scheme {
+    override val primaryLight = Color(0xFF266489)
+    override val onPrimaryLight = Color(0xFFFFFFFF)
+    override val primaryContainerLight = Color(0xFFC9E6FF)
+    override val onPrimaryContainerLight = Color(0xFF004B6F)
+    override val secondaryLight = Color(0xFF50606E)
+    override val onSecondaryLight = Color(0xFFFFFFFF)
+    override val secondaryContainerLight = Color(0xFFD3E5F5)
+    override val onSecondaryContainerLight = Color(0xFF384956)
+    override val tertiaryLight = Color(0xFF64597B)
+    override val onTertiaryLight = Color(0xFFFFFFFF)
+    override val tertiaryContainerLight = Color(0xFFEADDFF)
+    override val onTertiaryContainerLight = Color(0xFF4C4163)
+    override val errorLight = Color(0xFFBA1A1A)
+    override val onErrorLight = Color(0xFFFFFFFF)
+    override val errorContainerLight = Color(0xFFFFDAD6)
+    override val onErrorContainerLight = Color(0xFF93000A)
+    override val backgroundLight = Color(0xFFF7F9FF)
+    override val onBackgroundLight = Color(0xFF181C20)
+    override val surfaceLight = Color(0xFFF7F9FF)
+    override val onSurfaceLight = Color(0xFF181C20)
+    override val surfaceVariantLight = Color(0xFFDDE3EA)
+    override val onSurfaceVariantLight = Color(0xFF41474D)
+    override val outlineLight = Color(0xFF72787E)
+    override val outlineVariantLight = Color(0xFFC1C7CE)
+    override val scrimLight = Color(0xFF000000)
+    override val inverseSurfaceLight = Color(0xFF2D3135)
+    override val inverseOnSurfaceLight = Color(0xFFEEF1F6)
+    override val inversePrimaryLight = Color(0xFF95CDF7)
+    override val surfaceDimLight = Color(0xFFD7DADF)
+    override val surfaceBrightLight = Color(0xFFF7F9FF)
+    override val surfaceContainerLowestLight = Color(0xFFFFFFFF)
+    override val surfaceContainerLowLight = Color(0xFFF1F4F9)
+    override val surfaceContainerLight = Color(0xFFEBEEF3)
+    override val surfaceContainerHighLight = Color(0xFFE5E8ED)
+    override val surfaceContainerHighestLight = Color(0xFFE0E3E8)
 
-val themes = mapOf<String, Scheme>(Pair("Torbox", Torbox), Pair("Cherry Blossom", CherryBlossom))
+    override val primaryDark = Color(0xFF95CDF7)
+    override val onPrimaryDark = Color(0xFF00344E)
+    override val primaryContainerDark = Color(0xFF004B6F)
+    override val onPrimaryContainerDark = Color(0xFFC9E6FF)
+    override val secondaryDark = Color(0xFFB7C9D9)
+    override val onSecondaryDark = Color(0xFF22323F)
+    override val secondaryContainerDark = Color(0xFF384956)
+    override val onSecondaryContainerDark = Color(0xFFD3E5F5)
+    override val tertiaryDark = Color(0xFFCEC0E8)
+    override val onTertiaryDark = Color(0xFF352B4B)
+    override val tertiaryContainerDark = Color(0xFF4C4163)
+    override val onTertiaryContainerDark = Color(0xFFEADDFF)
+    override val errorDark = Color(0xFFFFB4AB)
+    override val onErrorDark = Color(0xFF690005)
+    override val errorContainerDark = Color(0xFF93000A)
+    override val onErrorContainerDark = Color(0xFFFFDAD6)
+    override val backgroundDark = Color(0xFF101417)
+    override val onBackgroundDark = Color(0xFFE0E3E8)
+    override val surfaceDark = Color(0xFF101417)
+    override val onSurfaceDark = Color(0xFFE0E3E8)
+    override val surfaceVariantDark = Color(0xFF41474D)
+    override val onSurfaceVariantDark = Color(0xFFC1C7CE)
+    override val outlineDark = Color(0xFF8B9198)
+    override val outlineVariantDark = Color(0xFF41474D)
+    override val scrimDark = Color(0xFF000000)
+    override val inverseSurfaceDark = Color(0xFFE0E3E8)
+    override val inverseOnSurfaceDark = Color(0xFF2D3135)
+    override val inversePrimaryDark = Color(0xFF266489)
+    override val surfaceDimDark = Color(0xFF101417)
+    override val surfaceBrightDark = Color(0xFF363A3E)
+    override val surfaceContainerLowestDark = Color(0xFF0B0F12)
+    override val surfaceContainerLowDark = Color(0xFF181C20)
+    override val surfaceContainerDark = Color(0xFF1C2024)
+    override val surfaceContainerHighDark = Color(0xFF262A2E)
+    override val surfaceContainerHighestDark = Color(0xFF313539)
+
+    override val displayFontFamily = null
+    override val bodyFontFamily = null
+}
+val themes = mapOf<String, Scheme>(Pair("Torbox", Torbox), Pair("Cherry Blossom", CherryBlossom), Pair("Blues", Blues), Pair("AMOLED (dark theme only)", AMOLED))
 @Composable
 fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable() () -> Unit){
     val theme = themes[themeName]!!
