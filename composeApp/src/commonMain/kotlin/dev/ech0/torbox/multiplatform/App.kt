@@ -24,6 +24,7 @@ import dev.ech0.torbox.multiplatform.ui.pages.DownloadsPage
 import dev.ech0.torbox.multiplatform.ui.pages.SearchPage
 import dev.ech0.torbox.multiplatform.ui.pages.SettingsPage
 import dev.ech0.torbox.multiplatform.ui.pages.watch.WatchSearchPage
+import dev.ech0.torbox.multiplatform.ui.pages.watch.WatchSearchPageN
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
@@ -76,7 +77,7 @@ fun Navigation(
             DownloadsPage()
         }
         composable("Watch") {
-            WatchSearchPage()
+            WatchSearchPageN()
         }
         composable("Search") {
             SearchPage()
