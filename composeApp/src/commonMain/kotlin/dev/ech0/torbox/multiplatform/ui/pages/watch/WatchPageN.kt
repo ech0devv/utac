@@ -1,26 +1,56 @@
 package dev.ech0.torbox.multiplatform.ui.pages.watch
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowLeft
 import androidx.compose.material.icons.filled.KeyboardDoubleArrowRight
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -32,20 +62,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import dev.ech0.torbox.multiplatform.LocalNavController
 import dev.ech0.torbox.multiplatform.api.tmdbApi
 import dev.ech0.torbox.multiplatform.api.traktApi
 import dev.ech0.torbox.multiplatform.ui.components.LoadingScreen
-import dev.ech0.torbox.multiplatform.ui.components.TorrentSelectDialogArguments
 import dev.ech0.torbox.multiplatform.ui.components.TorrentSelectDialog
+import dev.ech0.torbox.multiplatform.ui.components.TorrentSelectDialogArguments
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WatchPage(meta: JsonObject, navController: NavController) {
+fun WatchPageN(meta: WatchSearchResult) {
+    val navController = LocalNavController.current
     var overviewDialog by remember { mutableStateOf(false) }
     var overviewDialogContent by remember { mutableStateOf("") }
-    val type = WatchSearchResultType.valueOf(meta["media_type"]!!.jsonPrimitive.content.uppercase())
+    val type = meta.type
     var details by remember { mutableStateOf(JsonObject(emptyMap())) }
     var seasons by remember { mutableStateOf(arrayOfNulls<JsonObject>(0)) }
     var seasonCarouselState by remember { mutableStateOf(PagerState(pageCount = { 1 })) }
@@ -57,22 +97,22 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
     var torrentSelectDialogArgs by remember {
         mutableStateOf(
             TorrentSelectDialogArguments(
-                0, 0, "", WatchSearchResultType.MOVIE, {}, navController
+                0, 0, "", WatchSearchResultType.TV, {}, navController
             )
         )
     }
     var displayTorrentSelectDialog by remember { mutableStateOf(false) }
     LaunchedEffect(true) {
-        traktId = traktApi.getTraktIdFromTMDB(meta["id"]!!.jsonPrimitive.long)
+        traktId = traktApi.getTraktIdFromTMDB(meta.id)
         if (type == WatchSearchResultType.TV) {
             traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JsonObject(emptyMap())
-            details = tmdbApi.getTvDetails(meta["id"]!!.jsonPrimitive.int)
+            details = tmdbApi.getTvDetails(meta.id.toInt())
             seasons = arrayOfNulls<JsonObject>(details["number_of_seasons"]!!.jsonPrimitive.int)
-            seasons[0] = tmdbApi.getSeasonDetails(meta["id"]!!.jsonPrimitive.int, 1)
+            seasons[0] = tmdbApi.getSeasonDetails(meta.id.toInt(), 1)
             seasonCarouselState = PagerState(pageCount = { seasons.size })
         } else if (type == WatchSearchResultType.MOVIE) {
             traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JsonObject(emptyMap())
-            details = tmdbApi.getMovieDetails(meta["id"]!!.jsonPrimitive.int)
+            details = tmdbApi.getMovieDetails(meta.id.toInt())
             seasons = arrayOfNulls<JsonObject>(1)
             seasons[0] = Json.parseToJsonElement(
                 """
@@ -100,7 +140,7 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
             if (seasons.size != 0) {
                 if (seasons[page] == null) {
                     val updatedSeasons = seasons.copyOf()
-                    updatedSeasons[page] = tmdbApi.getSeasonDetails(meta["id"]!!.jsonPrimitive.int, page + 1)
+                    updatedSeasons[page] = tmdbApi.getSeasonDetails(meta.id.toInt(), page + 1)
                     seasons = updatedSeasons
                 }
             }
@@ -112,9 +152,8 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
         ) {
             AsyncImage(
                 model = tmdbApi.imageHelper(
-                meta["backdrop_path"]?.jsonPrimitive?.contentOrNull ?: meta["poster_path"]?.jsonPrimitive?.contentOrNull
-                ?: ""
-            ),
+                    meta.poster ?: ""
+                ),
                 contentDescription = null,
                 modifier = Modifier.clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)).blur(25.dp)
                     .height(200.dp).graphicsLayer { alpha = 0.99F }.drawWithContent {
@@ -131,7 +170,7 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
             )
             SelectionContainer {
                 Text(
-                    meta["name"]?.jsonPrimitive?.contentOrNull ?: meta["title"]?.jsonPrimitive?.contentOrNull ?: "",
+                    meta.title,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         shadow = Shadow(
                             color = Color.Gray, offset = Offset(0f, 0f), blurRadius = 25f
@@ -182,12 +221,12 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
             }
         }
 
-        if (meta.contains("overview")) {
+        if (meta.summary != null) {
             Text(
-                meta["overview"]!!.jsonPrimitive.content,
+                meta.summary,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 24.dp).clickable {
-                    overviewDialogContent = meta["overview"]!!.jsonPrimitive.content; overviewDialog = true
+                    overviewDialogContent = meta.summary; overviewDialog = true
                 },
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 overflow = TextOverflow.Ellipsis,
@@ -271,12 +310,12 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
                                     displayTorrentSelectDialog = true
                                     scope.launch {
                                         if (type == WatchSearchResultType.MOVIE) {
-                                            traktApi.addMovie(meta["id"]!!.jsonPrimitive.long)
+                                            traktApi.addMovie(meta.id)
                                             traktResponse = traktApi.getWatchedMovie(traktId.toLong()) ?: JsonObject(
                                                 emptyMap()
                                             )
                                         } else {
-                                            traktApi.addShow(meta["id"]!!.jsonPrimitive.long, state + 1, i + 1)
+                                            traktApi.addShow(meta.id, state + 1, i + 1)
                                             traktResponse = traktApi.getWatchedShow(traktId.toLong()) ?: JsonObject(
                                                 emptyMap()
                                             )
@@ -287,21 +326,21 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
                                     scope.launch {
                                         if (watched) {
                                             if (type == WatchSearchResultType.MOVIE) {
-                                                traktApi.removeMovie(meta["id"]!!.jsonPrimitive.long)
+                                                traktApi.removeMovie(meta.id)
                                                 traktResponse =
                                                     traktApi.getWatchedMovie(traktId.toLong()) ?: JsonObject(emptyMap())
                                             } else {
-                                                traktApi.removeShow(meta["id"]!!.jsonPrimitive.long, state + 1, i + 1)
+                                                traktApi.removeShow(meta.id, state + 1, i + 1)
                                                 traktResponse =
                                                     traktApi.getWatchedShow(traktId.toLong()) ?: JsonObject(emptyMap())
                                             }
                                         } else {
                                             if (type == WatchSearchResultType.MOVIE) {
-                                                traktApi.addMovie(meta["id"]!!.jsonPrimitive.long)
+                                                traktApi.addMovie(meta.id)
                                                 traktResponse =
                                                     traktApi.getWatchedMovie(traktId.toLong()) ?: JsonObject(emptyMap())
                                             } else {
-                                                traktApi.addShow  (meta["id"]!!.jsonPrimitive.long, state + 1, i + 1)
+                                                traktApi.addShow(meta.id, state + 1, i + 1)
                                                 traktResponse =
                                                     traktApi.getWatchedShow(traktId.toLong()) ?: JsonObject(emptyMap())
                                             }
@@ -312,8 +351,8 @@ fun WatchPage(meta: JsonObject, navController: NavController) {
                             if (episode.contains("still_path")) {
                                 AsyncImage(
                                     model = tmdbApi.imageHelper(
-                                    episode["still_path"]!!.jsonPrimitive.content
-                                ),
+                                        episode["still_path"]!!.jsonPrimitive.content
+                                    ),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.blur(25.dp).graphicsLayer { alpha = 0.5f }.matchParentSize()

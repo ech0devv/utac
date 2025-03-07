@@ -20,6 +20,7 @@ import dev.ech0.torbox.multiplatform.LocalSnackbarHostState
 import dev.ech0.torbox.multiplatform.PlayVideo
 import dev.ech0.torbox.multiplatform.api.torboxAPI
 import dev.ech0.torbox.multiplatform.formatFileSize
+import dev.ech0.torbox.multiplatform.ui.pages.watch.WatchSearchResultType
 import io.ktor.http.*
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class TorrentSelectDialogArguments(
     var season: Int,
     var episode: Int,
     var remoteId: String,
-    var type: String,
+    var type: WatchSearchResultType,
     var onDismiss: () -> Unit,
     var navController: NavController
 )
@@ -62,11 +63,11 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
         shouldLoad = true
         joinAll(launch {
             try {
-                if (arguments.type == "tv") {
+                if (arguments.type == WatchSearchResultType.TV) {
                     torrentResults = torboxAPI.searchTorrents(
                         arguments.remoteId, arguments.season, arguments.episode
                     )["data"]!!.jsonObject["torrents"]!!.jsonArray
-                } else if (arguments.type == "movie") {/*torrentResults =
+                } else if (arguments.type == WatchSearchResultType.MOVIE) {/*torrentResults =
                         torboxAPI.searchTorrentsId(arguments.remoteId).getJSONObject("data").getJSONArray("torrents")*/
                     torrentResults =
                         torboxAPI.searchTorrents(arguments.remoteId)["data"]!!.jsonObject["torrents"]!!.jsonArray
@@ -87,11 +88,11 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
         }, launch {
             if (Settings().getInt("plan", 4) == 2 && Settings().getBoolean("usenet", true)) {
                 try {
-                    if (arguments.type == "tv") {
+                    if (arguments.type == WatchSearchResultType.TV) {
                         usenetResults = torboxAPI.searchUsenet(
                             arguments.remoteId, arguments.season, arguments.episode
                         )["data"]!!.jsonObject["nzbs"]!!.jsonArray
-                    } else if (arguments.type == "movie") {
+                    } else if (arguments.type == WatchSearchResultType.MOVIE) {
                         usenetResults =
                             torboxAPI.searchUsenet(arguments.remoteId)["data"]!!.jsonObject["nzbs"]!!.jsonArray
                     }
@@ -206,7 +207,7 @@ fun TorrentSelectDialog(arguments: TorrentSelectDialogArguments) {
                                                         val cached =
                                                             cachedRaw["data"]!!.jsonObject[cachedRaw["data"]!!.jsonObject.keys.first()]!!.jsonObject["files"]!!.jsonArray
 
-                                                        if (arguments.type == "tv") {
+                                                        if (arguments.type == WatchSearchResultType.TV) {
                                                             for (i in 0 until cached.size) {
                                                                 if (cached[i].jsonObject["name"]!!.jsonPrimitive.content.contains(
                                                                         "S${

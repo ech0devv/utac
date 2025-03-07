@@ -58,6 +58,7 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
     var dropdownOpen by remember { mutableStateOf(false) }
     var darkMode by remember { mutableStateOf(Settings().getBoolean("dark", true)) }
     var usenetChecked by remember { mutableStateOf(Settings().getBoolean("usenet", true)) }
+    var userEngineChecked by remember { mutableStateOf(Settings().getBoolean("userEngines", true)) }
     var adultChecked by remember { mutableStateOf(Settings().getBoolean("adultContent", false)) }
     var searchChecked by remember { mutableStateOf(Settings().getBoolean("searchTop", false)) }
     var blurChecked by remember { mutableStateOf(Settings().getBoolean("blurDL", false)) }
@@ -357,6 +358,52 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
             }, modifier = Modifier.padding(all = 0.dp)
             )
         }
+        HorizontalDivider(
+
+        )
+        Row(
+            modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Outlined.Tune,
+                "Enable user engines",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Column() {
+                Text("Enable user engines")
+                Text(
+                    "Allows usage of user engines, set on torbox.app.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.width(250.dp),
+
+                    )
+            }
+            Spacer(Modifier.weight(1f))
+            Switch(checked = userEngineChecked, onCheckedChange = {
+                Settings().putBoolean("userEngines", it); userEngineChecked = it;
+            }, thumbContent = {
+                AnimatedContent(userEngineChecked, transitionSpec = {
+                    slideInVertically { height -> height } + fadeIn() togetherWith slideOutVertically { height -> -height } + fadeOut()
+                }) { checked ->
+                    if (checked) {
+                        Icon(
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                        )
+                    }
+                }
+            }, modifier = Modifier.padding(all = 0.dp)
+            )
+        }
         Text(
             "Appearance",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -551,7 +598,6 @@ fun SettingsPage(setColorScheme: (String) -> Unit = {}, setDarkTheme: (Boolean) 
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(start = 16.dp, top = 8.dp)
         )
-        HorizontalDivider()
         Row(
             modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically
         ) {

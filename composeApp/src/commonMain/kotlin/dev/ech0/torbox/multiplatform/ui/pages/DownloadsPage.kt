@@ -266,7 +266,7 @@ fun DownloadsPage(magnet: String = "") {
 
                     ) {
                     Column(
-                        modifier = Modifier.padding(24.dp).verticalScroll(rememberScrollState()),
+                        modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Icon(
@@ -280,7 +280,7 @@ fun DownloadsPage(magnet: String = "") {
                             modifier = Modifier.padding(top = 16.dp)
                         )
                         OutlinedTextField(
-                            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp),
+                            modifier = Modifier.padding(top = 24.dp, bottom = 24.dp).verticalScroll(rememberScrollState()),
                             value = magnetText,
                             onValueChange = { newVal ->
                                 magnetText = newVal

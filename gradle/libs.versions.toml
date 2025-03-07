@@ -1,18 +1,19 @@
 [versions]
-agp = "8.8.0"
+agp = "8.8.2"
 android-compileSdk = "35"
 android-minSdk = "26"
 android-targetSdk = "35"
-androidx-activityCompose = "1.10.0"
+androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
-androidx-constraintlayout = "2.2.0"
+androidx-constraintlayout = "2.2.1"
 androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
-androidx-material3 = "1.4.0-alpha06"
+androidx-material3 = "1.4.0-alpha09"
 androidx-test-junit = "1.2.1"
 coilComposeVersion = "3.0.4"
-compose-multiplatform = "1.7.3"
+compose-multiplatform = "1.8.0-alpha03"
+compose-multiplatform-backhandler = "1.8.0-alpha03"
 junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinx-coroutines = "1.10.1"
@@ -21,12 +22,15 @@ kotlinxSerializationJson = "1.8.0"
 ktorClientAndroid = "3.0.4"
 ktorClientCore = "3.0.3"
 multiplatformSettings = "1.3.0"
-navigationCompose = "2.8.0-alpha10"
-navigationRuntimeKtx = "2.8.5"
-foundationLayoutAndroid = "1.7.6"
+navigationCompose = "2.8.0-alpha13"
+navigationRuntimeKtx = "2.8.8"
+foundationLayoutAndroid = "1.7.8"
 okhttp = "5.0.0-alpha.14"
+eungabi = "0.4.0"
 
 [libraries]
+compose-multiplatform-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "compose-multiplatform-backhandler" }
+eungabi = { module = "io.github.easternkite:eungabi", version.ref = "eungabi" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilComposeVersion" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion" }
 coil3-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion" }

@@ -1,5 +1,6 @@
 package dev.ech0.torbox.multiplatform
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.ComposeUIViewController
@@ -22,3 +23,7 @@ actual fun PlayVideo(videoUrl: String) {
 }
 
 fun MainViewController() = ComposeUIViewController { App() }
+@Composable
+actual fun GetDynamicScheme(): ColorScheme? {
+    return null
+}

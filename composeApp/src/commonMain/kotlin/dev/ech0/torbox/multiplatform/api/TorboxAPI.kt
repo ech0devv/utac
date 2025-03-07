@@ -231,21 +231,23 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
 
     suspend fun searchTorrents(query: String, season: Int, episode: Int): JsonObject {
         val response =
-            ktor.get(base_search + "torrents/${query.encodeURLPath()}?check_cache=true&check_owned=true&season=$season&episode=$episode&metadata=false") {
+            ktor.get(base_search + "torrents/${query.encodeURLPath()}?check_cache=true&check_owned=true&season=$season&episode=$episode&metadata=false&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
             }
+        println(response.bodyAsText())
         val json = Json.decodeFromString<JsonObject>(response.bodyAsText())
         if (!json["success"]!!.jsonPrimitive.boolean) {
             return JsonObject(mapOf(Pair("data", JsonObject(mapOf(Pair("torrents", JsonArray(listOf())))))))
         }
+        println(response.bodyAsText())
         return json
     }
 
     suspend fun searchTorrentsId(query: String): JsonObject {
         val response =
-            ktor.get(base_search + "torrents/${query.encodeURLPath()}?check_cache=true&check_owned=true&metadata=false") {
+            ktor.get(base_search + "torrents/${query.encodeURLPath()}?check_cache=true&check_owned=true&metadata=false&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
@@ -260,7 +262,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
     suspend fun searchUsenet(query: String, season: Int, episode: Int): JsonObject {
 
         val response =
-            ktor.get(base_search + "usenet/${query.encodeURLPath()}?check_cache=true&check_owned=true&season=$season&episode=$episode&metadata=false") {
+            ktor.get(base_search + "usenet/${query.encodeURLPath()}?check_cache=true&check_owned=true&season=$season&episode=$episode&metadata=false&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
@@ -274,7 +276,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
 
     suspend fun searchUsenetId(query: String): JsonObject {
         val response =
-            ktor.get(base_search + "usenet/${query.encodeURLPath()}?check_cache=true&check_owned=true&metadata=false") {
+            ktor.get(base_search + "usenet/${query.encodeURLPath()}?check_cache=true&check_owned=true&metadata=false&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
@@ -289,7 +291,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
     suspend fun searchTorrents(query: String): JsonObject {
         println(query.encodeURLPath())
         val response =
-            ktor.get(base_search + "torrents/search/${query.encodeURLPath()}?check_cache=true&check_owned=true") {
+            ktor.get(base_search + "torrents/search/${query.encodeURLPath()}?check_cache=true&check_owned=true&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }
@@ -303,7 +305,7 @@ class TorboxAPI(private var key: String, navController: NavHostController?) {
 
     suspend fun searchUsenet(query: String): JsonObject {
         val response =
-            ktor.get(base_search + "usenet/search/${query.encodeURLPath()}?check_cache=true&check_owned=true") {
+            ktor.get(base_search + "usenet/search/${query.encodeURLPath()}?check_cache=true&check_owned=true&search_user_engines=${Settings().getBoolean("userEngines", true)}") {
                 headers {
                     append(HttpHeaders.Authorization, "Bearer $key")
                 }

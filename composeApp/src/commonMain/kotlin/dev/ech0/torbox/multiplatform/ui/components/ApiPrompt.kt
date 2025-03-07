@@ -5,10 +5,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +31,7 @@ fun ApiPrompt(dismiss: () -> Unit, navController: NavController) {
     var showApikey by remember { mutableStateOf(if(getPlatform().name == "iOS") true else false) }
     var shouldLoad by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
     Dialog(onDismissRequest = dismiss) {
         Card(
             modifier = Modifier
@@ -69,6 +73,12 @@ fun ApiPrompt(dismiss: () -> Unit, navController: NavController) {
                                 }
                             }, onClick = { showApikey = !showApikey })
                         }
+                    }, leadingIcon = {
+                        IconButton(content = {
+                            Icon(Icons.Outlined.ContentPaste, null)
+                        }, onClick = {scope.launch {
+                            apiKeySet = clipboardManager.getText()?.text ?: ""
+                        }})
                     })
                 Text(
                     "Your API Key will be stored locally and sent only to Torbox servers, nowhere else.",

@@ -1,5 +1,6 @@
 package dev.ech0.torbox.multiplatform
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.Window
@@ -27,4 +28,8 @@ actual fun PlayVideo(videoUrl: String) {
             snackbarHostState.showSnackbar("No video player found :(")
         }
     }
+}
+@Composable
+actual fun GetDynamicScheme(): ColorScheme? {
+    return null
 }

@@ -82,7 +82,7 @@ fun WatchSearchPage() {
                                             (it.contains("name") || it.contains("title")) && (it["media_type"]!!.jsonPrimitive.content == "tv" || it["media_type"]!!.jsonPrimitive.content == "movie")
                                         }.sortedByDescending {
                                             var score = 0.0
-                                            if ((it["name"] ?: it["title"] ?: "").toString()
+                                            if ((it["name"]?.jsonPrimitive?.content ?: it["title"]?.jsonPrimitive?.content ?: "")
                                                     .lowercase() == textFieldState.toString().lowercase()
                                             ) {
                                                 score = Double.MAX_VALUE

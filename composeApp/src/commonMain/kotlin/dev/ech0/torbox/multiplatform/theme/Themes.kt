@@ -7,11 +7,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import dev.ech0.torbox.multiplatform.api.base
+import dev.ech0.torbox.multiplatform.GetDynamicScheme
+import dev.ech0.torbox.multiplatform.getPlatform
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.FontResource
-import utac.composeapp.generated.resources.Res
 import utac.composeapp.generated.resources.Doto
+import utac.composeapp.generated.resources.Res
 
 interface Scheme {
     val primaryLight: Color
@@ -164,6 +165,7 @@ object Torbox : Scheme {
     override val displayFontFamily = Res.font.Doto
     override val bodyFontFamily = null
 }
+
 object AMOLED : Scheme {
     override val primaryLight = Color(0xFF39693B)
     override val onPrimaryLight = Color(0xFFFFFFFF)
@@ -239,7 +241,8 @@ object AMOLED : Scheme {
     override val displayFontFamily = null
     override val bodyFontFamily = null
 }
-object CherryBlossom: Scheme {
+
+object CherryBlossom : Scheme {
     override val primaryLight = Color(0xFF8C4A5D)
     override val onPrimaryLight = Color(0xFFFFFFFF)
     override val primaryContainerLight = Color(0xFFFFD9E1)
@@ -314,6 +317,7 @@ object CherryBlossom: Scheme {
     override val displayFontFamily = null
     override val bodyFontFamily = null
 }
+
 object Blues : Scheme {
     override val primaryLight = Color(0xFF266489)
     override val onPrimaryLight = Color(0xFFFFFFFF)
@@ -390,11 +394,97 @@ object Blues : Scheme {
     override val displayFontFamily = null
     override val bodyFontFamily = null
 }
-val themes = mapOf<String, Scheme>(Pair("Torbox", Torbox), Pair("Cherry Blossom", CherryBlossom), Pair("Blues", Blues), Pair("AMOLED (dark theme only)", AMOLED))
+
+
+val themes = buildMap<String, Scheme> {
+    put("Torbox", Torbox)
+    put("Cherry Blossom", CherryBlossom)
+    put("Blues", Blues)
+    put("AMOLED (dark theme only)", AMOLED)
+}.toMutableMap()
+
 @Composable
-fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable() () -> Unit){
-    val theme = themes[themeName]!!
-    val scheme = if(!darkTheme){
+fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable() () -> Unit) {
+    /*if (getPlatform().name == "Android" && GetDynamicScheme() != null && !themes.contains("Dynamic")) {
+        val dynamicScheme = GetDynamicScheme()
+        val scheme = object : Scheme {
+            override val primaryLight = dynamicScheme!!.primary
+            override val onPrimaryLight = dynamicScheme!!.onPrimary
+            override val primaryContainerLight = dynamicScheme!!.primaryContainer
+            override val onPrimaryContainerLight = dynamicScheme!!.onPrimaryContainer
+            override val secondaryLight = dynamicScheme!!.secondary
+            override val onSecondaryLight = dynamicScheme!!.onSecondary
+            override val secondaryContainerLight = dynamicScheme!!.secondaryContainer
+            override val onSecondaryContainerLight = dynamicScheme!!.onSecondaryContainer
+            override val tertiaryLight = dynamicScheme!!.tertiary
+            override val onTertiaryLight = dynamicScheme!!.onTertiary
+            override val tertiaryContainerLight = dynamicScheme!!.tertiaryContainer
+            override val onTertiaryContainerLight = dynamicScheme!!.onTertiaryContainer
+            override val errorLight = dynamicScheme!!.error
+            override val onErrorLight = dynamicScheme!!.onError
+            override val errorContainerLight = dynamicScheme!!.errorContainer
+            override val onErrorContainerLight = dynamicScheme!!.onErrorContainer
+            override val backgroundLight = dynamicScheme!!.background
+            override val onBackgroundLight = dynamicScheme!!.onBackground
+            override val surfaceLight = dynamicScheme!!.surface
+            override val onSurfaceLight = dynamicScheme!!.onSurface
+            override val surfaceVariantLight = dynamicScheme!!.surfaceVariant
+            override val onSurfaceVariantLight = dynamicScheme!!.onSurfaceVariant
+            override val outlineLight = dynamicScheme!!.outline
+            override val outlineVariantLight = dynamicScheme!!.outlineVariant
+            override val scrimLight = dynamicScheme!!.scrim
+            override val inverseSurfaceLight = dynamicScheme!!.inverseSurface
+            override val inverseOnSurfaceLight = dynamicScheme!!.inverseOnSurface
+            override val inversePrimaryLight = dynamicScheme!!.inversePrimary
+            override val surfaceDimLight = dynamicScheme!!.surfaceDim
+            override val surfaceBrightLight = dynamicScheme!!.surfaceBright
+            override val surfaceContainerLowestLight = dynamicScheme!!.surfaceContainerLowest
+            override val surfaceContainerLowLight = dynamicScheme!!.surfaceContainerLow
+            override val surfaceContainerLight = dynamicScheme!!.surfaceContainer
+            override val surfaceContainerHighLight = dynamicScheme!!.surfaceContainerHigh
+            override val surfaceContainerHighestLight = dynamicScheme!!.surfaceContainerHighest
+            override val primaryDark = dynamicScheme!!.primary
+            override val onPrimaryDark = dynamicScheme!!.onPrimary
+            override val primaryContainerDark = dynamicScheme!!.primaryContainer
+            override val onPrimaryContainerDark = dynamicScheme!!.onPrimaryContainer
+            override val secondaryDark = dynamicScheme!!.secondary
+            override val onSecondaryDark = dynamicScheme!!.onSecondary
+            override val secondaryContainerDark = dynamicScheme!!.secondaryContainer
+            override val onSecondaryContainerDark = dynamicScheme!!.onSecondaryContainer
+            override val tertiaryDark = dynamicScheme!!.tertiary
+            override val onTertiaryDark = dynamicScheme!!.onTertiary
+            override val tertiaryContainerDark = dynamicScheme!!.tertiaryContainer
+            override val onTertiaryContainerDark = dynamicScheme!!.onTertiaryContainer
+            override val errorDark = dynamicScheme!!.error
+            override val onErrorDark = dynamicScheme!!.onError
+            override val errorContainerDark = dynamicScheme!!.errorContainer
+            override val onErrorContainerDark = dynamicScheme!!.onErrorContainer
+            override val backgroundDark = dynamicScheme!!.background
+            override val onBackgroundDark = dynamicScheme!!.onBackground
+            override val surfaceDark = dynamicScheme!!.surface
+            override val onSurfaceDark = dynamicScheme!!.onSurface
+            override val surfaceVariantDark = dynamicScheme!!.surfaceVariant
+            override val onSurfaceVariantDark = dynamicScheme!!.onSurfaceVariant
+            override val outlineDark = dynamicScheme!!.outline
+            override val outlineVariantDark = dynamicScheme!!.outlineVariant
+            override val scrimDark = dynamicScheme!!.scrim
+            override val inverseSurfaceDark = dynamicScheme!!.inverseSurface
+            override val inverseOnSurfaceDark = dynamicScheme!!.inverseOnSurface
+            override val inversePrimaryDark = dynamicScheme!!.inversePrimary
+            override val surfaceDimDark = dynamicScheme!!.surfaceDim
+            override val surfaceBrightDark = dynamicScheme!!.surfaceBright
+            override val surfaceContainerLowestDark = dynamicScheme!!.surfaceContainerLowest
+            override val surfaceContainerLowDark = dynamicScheme!!.surfaceContainerLow
+            override val surfaceContainerDark = dynamicScheme!!.surfaceContainer
+            override val surfaceContainerHighDark = dynamicScheme!!.surfaceContainerHigh
+            override val surfaceContainerHighestDark = dynamicScheme!!.surfaceContainerHighest
+            override val bodyFontFamily = null
+            override val displayFontFamily = null
+        }
+        themes["Dynamic"] = scheme
+    }*/
+    val theme = themes[themeName] ?: Torbox
+    val scheme = if (!darkTheme) {
         lightColorScheme(
             primary = theme.primaryLight,
             onPrimary = theme.onPrimaryLight,
@@ -432,7 +522,7 @@ fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable(
             surfaceContainerHigh = theme.surfaceContainerHighLight,
             surfaceContainerHighest = theme.surfaceContainerHighestLight,
         )
-    }else{
+    } else {
         darkColorScheme(
             primary = theme.primaryDark,
             onPrimary = theme.onPrimaryDark,
@@ -474,10 +564,10 @@ fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable(
     val baseline = Typography()
     var displayFontFamily = baseline.displayMedium.fontFamily
     var bodyFontFamily = baseline.bodyMedium.fontFamily
-    if(theme.displayFontFamily != null){
+    if (theme.displayFontFamily != null) {
         displayFontFamily = FontFamily(Font(theme.displayFontFamily!!))
     }
-    if(theme.bodyFontFamily != null){
+    if (theme.bodyFontFamily != null) {
         bodyFontFamily = FontFamily(Font(theme.bodyFontFamily!!))
     }
     val AppTypography = Typography(
@@ -497,5 +587,5 @@ fun AppTheme(themeName: String, darkTheme: Boolean = true, content: @Composable(
         labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
         labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
     )
-    MaterialTheme(colorScheme = scheme, typography = AppTypography,content = content)
+    MaterialTheme(colorScheme = scheme, typography = AppTypography, content = content)
 }

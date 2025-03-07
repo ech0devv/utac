@@ -51,7 +51,7 @@ class Trakt {
             GlobalScope.launch(Dispatchers.IO) {
                 getAccToken().let {
                     if (it.contains("error")) {
-                        Settings().remove("traktToken")
+                        delay(2000)
                         traktApi = Trakt()
                     } else {
                         token = it["access_token"]!!.jsonPrimitive.content

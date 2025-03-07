@@ -25,6 +25,7 @@ import dev.ech0.torbox.multiplatform.ui.pages.SearchPage
 import dev.ech0.torbox.multiplatform.ui.pages.SettingsPage
 import dev.ech0.torbox.multiplatform.ui.pages.watch.WatchSearchPage
 import dev.ech0.torbox.multiplatform.ui.pages.watch.WatchSearchPageN
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 val LocalNavController = compositionLocalOf<NavController> { error("No NavController found!") }
@@ -32,6 +33,9 @@ val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> { error("No S
 
 @Composable
 expect fun PlayVideo(videoUrl: String)
+
+@Composable
+expect fun GetDynamicScheme(): ColorScheme?
 
 @Composable
 @Preview
@@ -46,6 +50,7 @@ fun App() {
         var showContent by remember { mutableStateOf(false) }
         val navController = rememberNavController()
         val snackbarHostState = remember { SnackbarHostState() }
+        val scope = rememberCoroutineScope()
         Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)){
             CompositionLocalProvider(
                 LocalNavController provides navController, LocalSnackbarHostState provides snackbarHostState

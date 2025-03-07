@@ -1,10 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.util.*
+import java.util.Properties
 
-val version = "2.0.0"
-val versionNumber = 1
+val version = "2.1.0"
+val versionNumber = 2
 
 val properties = Properties()
 properties.load(project.rootProject.file("key.properties").inputStream())
@@ -14,9 +14,10 @@ val traktSecret: String = properties.getProperty("TRAKT_SECRET")
 
 // https://stackoverflow.com/a/74771876
 // hi
-val buildConfigGenerator by tasks.registering(Sync::class){
+val buildConfigGenerator by tasks.registering(Sync::class) {
     from(
-        resources.text.fromString("""
+        resources.text.fromString(
+            """
             package dev.ech0.torbox.multiplatform
             
             object BuildConfig{
@@ -25,8 +26,9 @@ val buildConfigGenerator by tasks.registering(Sync::class){
                 const val TRAKT_KEY = $traktKey
                 const val TRAKT_SECRET = $traktSecret
             }
-        """.trimIndent())
-    ){
+        """.trimIndent()
+        )
+    ) {
         rename { "BuildConfig.kt" }
         into("dev/ech0/torbox/multiplatform/")
     }
@@ -48,27 +50,24 @@ dependencies {
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
     listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
+        iosX64(), iosArm64(), iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
     }
-    
-    jvm("desktop"){}
+
+    jvm("desktop") {}
     sourceSets {
         val desktopMain by getting
         val commonMain by getting {
-            kotlin.srcDirs(buildConfigGenerator.map {it.destinationDir})
+            kotlin.srcDirs(buildConfigGenerator.map { it.destinationDir })
         }
         androidMain.dependencies {
             implementation(compose.preview)
@@ -95,6 +94,7 @@ kotlin {
             implementation(libs.coil.network.ktor3)
             implementation(compose.components.resources)
             implementation(libs.coil.svg)
+            implementation(libs.compose.multiplatform.backhandler)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
